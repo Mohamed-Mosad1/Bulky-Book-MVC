@@ -1,5 +1,13 @@
 ﻿@model Category
 
+<div class="card-header bg-secondary bg-gradient ml-0 py-3">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h2 class="text-white py-2">@ViewData["ActionName"] Category</h2>
+        </div>
+    </div>
+</div>
+
 <div class="card-body p-4">
     <form method="post" class="row">
         <div class="border p-3">
@@ -16,7 +24,7 @@
 
             <div class="row pt-2">
                 <div class="col-6 col-md-3">
-                    <button type="submit" class="btn btn-primary form-control">@ViewBag.ActionName</button>
+                    <button type="submit" class="btn btn-primary form-control">@ViewData["ActionName"]</button>
                 </div>
                 <div class="col-6 col-md-3">
                     <a asp-controller="Category" asp-action="Index" class="btn btn-outline-primary border  form-control">

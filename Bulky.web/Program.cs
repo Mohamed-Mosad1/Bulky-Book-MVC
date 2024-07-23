@@ -1,4 +1,6 @@
 using Bulky.DAL.Data;
+using Bulky.DAL.InterFaces;
+using Bulky.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bulky.web
@@ -16,6 +18,8 @@ namespace Bulky.web
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 
             var app = builder.Build();
 
@@ -57,7 +61,7 @@ namespace Bulky.web
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }
