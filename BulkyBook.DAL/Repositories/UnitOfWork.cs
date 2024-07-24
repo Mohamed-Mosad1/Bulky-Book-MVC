@@ -1,11 +1,6 @@
 ﻿using BulkyBook.DAL.Data;
 using BulkyBook.DAL.InterFaces;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BulkyBook.DAL.Repositories
 {
@@ -29,7 +24,7 @@ namespace BulkyBook.DAL.Repositories
                 _repositories.Add(key, repositoryInstance);
             }
 
-            return (IGenericRepository<TEntity>) _repositories[key];
+            return (IGenericRepository<TEntity>)_repositories[key];
         }
 
         public async Task<int> CompleteAsync()

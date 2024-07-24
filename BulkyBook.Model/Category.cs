@@ -6,7 +6,7 @@ namespace BulkyBook.Model
     public class Category
     {
         public int Id { get; set; }
-        
+
         [DisplayName("Category Name")]
         [MaxLength(50, ErrorMessage = "Name cannot exceed 50 characters!")]
         public string Name { get; set; } = null!;
