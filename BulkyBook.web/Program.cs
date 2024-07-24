@@ -1,6 +1,7 @@
 using BulkyBook.DAL.Data;
 using BulkyBook.DAL.InterFaces;
 using BulkyBook.DAL.Repositories;
+using BulkyBook.web.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace BulkyBook.web
@@ -20,6 +21,9 @@ namespace BulkyBook.web
             });
 
             builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+
+            builder.Services.AddAutoMapper(typeof(MappingProfiles));
+
 
             var app = builder.Build();
 
