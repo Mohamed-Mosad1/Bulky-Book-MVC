@@ -28,11 +28,12 @@ namespace BulkyBook.Model.ViewModels
         [Range(1, 10000)]
         public decimal Price100 { get; set; }
 
-        [DisplayName("Category")]
         public int CategoryId { get; set; }
-        public Category? Category { get; set; }
+
+        [DisplayName("Category")]
+        public string? CategoryName { get; set; }
 
         [DisplayName("Product Image")]
-        public List<ProductImage>? ProductImages { get; set; }
+        public List<ProductImageVM>? ProductImages { get; set; }
     }
 }

@@ -9,6 +9,7 @@ namespace BulkyBook.web.Helpers
         public MappingProfiles()
         {
             CreateMap<ProductVM, Product>().ReverseMap();
+            CreateMap<ProductImageVM, ProductImage>().ReverseMap();
         }
     }
 }

@@ -1,11 +1,9 @@
 ﻿// Ignore Spelling: Admin env Upsert
 
 using AutoMapper;
-using BulkyBook.DAL.InterFaces;
-using BulkyBook.DAL.Specifications.ProductSpecs;
+using BulkyBook.BLL.Services.Contract;
 using BulkyBook.Model;
 using BulkyBook.Model.ViewModels;
-using BulkyBook.Utility;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BulkyBook.web.Areas.Admin.Controllers
@@ -13,31 +11,24 @@ namespace BulkyBook.web.Areas.Admin.Controllers
     [Area("Admin")]
     public class ProductController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IProductService _productService;
         private readonly IWebHostEnvironment _env;
         private readonly IMapper _mapper;
-        private readonly string[] permittedExtensions = { ".jpg", ".jpeg", ".png" };
-
 
         public ProductController(
-            IUnitOfWork unitOfWork,
+            IProductService productService,
             IWebHostEnvironment env,
             IMapper mapper
             )
         {
-            _unitOfWork = unitOfWork;
+            _productService = productService;
             _env = env;
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var spec = new ProductWithCategoryAndImagesSpecification();
-            var productsWithCategory = await _unitOfWork.Repository<Product>().GetAllWithSpecAsync(spec);
-
-            var mappedProducts = _mapper.Map<IEnumerable<ProductVM>>(productsWithCategory);
-
-            return View(mappedProducts);
+            return View();
         }
 
         public async Task<IActionResult> Upsert(int? id)
@@ -49,8 +40,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
             }
             else
             {
-                var spec = new ProductWithCategoryAndImagesSpecification(id.Value);
-                var productWithCategoryAndImages = await _unitOfWork.Repository<Product>().GetWithSpecAsync(spec);
+                var productWithCategoryAndImages = await _productService.GetProductByIdAsync(id.Value);
 
                 if (productWithCategoryAndImages is null)
                     return NotFound();
@@ -66,54 +56,32 @@ namespace BulkyBook.web.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upsert([FromRoute] int id, ProductVM productVM, List<IFormFile> files)
         {
+            if (id != productVM.Id)
+                return BadRequest();
+
             if (!ModelState.IsValid)
                 return View(productVM);
 
-            var mappedProduct = _mapper.Map<Product>(productVM);
-
-            if (productVM.Id == 0)
-               _unitOfWork.Repository<Product>().Add(mappedProduct);
-            else 
-                _unitOfWork.Repository<Product>().Update(mappedProduct);
-               
-            var count = await _unitOfWork.CompleteAsync();
-
-            if (count <= 0)
-            {
-                TempData["error"] = "Something went wrong while creating the product";
-                return View(productVM);
-            }
-
             try
             {
-                if (files is not null && files.Any())
+                var mappedProduct = _mapper.Map<Product>(productVM);
+
+                var success = await _productService.SaveProductAsync(mappedProduct, files);
+                if (!success)
                 {
-                    foreach (IFormFile file in files)
-                    {
-                        if (!PhotoManager.IsValidFile(file))
-                        {
-                            ModelState.AddModelError("", "Invalid file type or size.");
-                            return View(productVM);
-                        }
-                        string productPath = Path.Combine("images", "products", "product-" + mappedProduct.Id);
-                     
-                        string newFilePath = await PhotoManager.UploadFileAsync(file, productPath, _env);
-
-                        var productImage = new ProductImage()
-                        {
-                            ImageUrl = newFilePath,
-                            ProductId = mappedProduct.Id,
-                        };
-
-                        _unitOfWork.Repository<ProductImage>().Update(productImage);
-                    }
-
-                    count = await _unitOfWork.CompleteAsync();
+                    TempData["error"] = "Something went wrong while creating or updating the product";
+                    return View(productVM);
                 }
 
-                TempData["success"] = count > 0 ? "Product Created or Updated Successfully" : "Something went wrong while creating the product";
+                if (id == 0)
+                {
+                    TempData["success"] = "Product created successfully";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                    TempData["success"] = "Product updated successfully";
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Upsert), new { id = mappedProduct.Id });
             }
             catch (Exception ex)
             {
@@ -123,51 +91,25 @@ namespace BulkyBook.web.Areas.Admin.Controllers
             }
         }
 
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (!id.HasValue || id == 0)
-                return NotFound();
-
-            var spec = new ProductWithCategoryAndImagesSpecification(id.Value);
-            var productWithCategory = await _unitOfWork.Repository<Product>().GetWithSpecAsync(spec);
-
-            if (productWithCategory is null)
-                return NotFound();
-
-            var mappedProduct = _mapper.Map<ProductVM>(productWithCategory);
-
-
-            return View(mappedProduct);
-        }
-
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeletePOST(int? id)
+        public async Task<IActionResult> DeleteImage(int? id)
         {
-            if (!id.HasValue || id == 0)
-                return BadRequest();
-
-            var spec = new ProductWithCategoryAndImagesSpecification(id.Value);
-            var productWithCategory = await _unitOfWork.Repository<Product>().GetWithSpecAsync(spec);
-
-            if (productWithCategory is null)
+            if ( !id.HasValue || id == 0)
                 return NotFound();
 
-            try
-            {
-                _unitOfWork.Repository<Product>().Delete(productWithCategory);
-                var count = await _unitOfWork.CompleteAsync();
+            var image = await _productService.GetImageByIdAsync(id.Value);
 
-                TempData["success"] = count > 0 ? "Product Deleted Successfully" : "Something went wrong while deleting the product";
+            if (image is null)
+                return NotFound();
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex);
+            var success = await _productService.DeleteImageByIdAsync(id.Value, image);
+            if (!success)
+                TempData["error"] = "Something went wrong while deleting the image";
 
-                return RedirectToAction(nameof(Index));
-            }
+            TempData["success"] = "Image deleted successfully";
+
+            return RedirectToAction(nameof(Upsert), new { id = image?.ProductId });
         }
 
         private void HandleException(Exception ex)
@@ -177,5 +119,29 @@ namespace BulkyBook.web.Areas.Admin.Controllers
             else
                 ModelState.AddModelError("", "Something went wrong while processing your request");
         }
+
+        #region API CALLS
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var products = await _productService.GetAllProductsAsync();
+            var mappedProducts = _mapper.Map<IEnumerable<ProductVM>>(products);
+
+            return Json(new { data = mappedProducts });
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var success = await _productService.DeleteProductByIdAsync(id);
+
+            if (!success)
+                return Json(new { success = false, message = "Error while deleting" });
+
+            return Json(new { success = true, message = "Delete Successful" });
+        }
+
+        #endregion
     }
 }

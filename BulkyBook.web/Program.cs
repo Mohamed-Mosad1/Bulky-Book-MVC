@@ -1,3 +1,5 @@
+using BulkyBook.BLL.Services;
+using BulkyBook.BLL.Services.Contract;
 using BulkyBook.DAL.Data;
 using BulkyBook.DAL.InterFaces;
 using BulkyBook.DAL.Repositories;
@@ -21,6 +23,7 @@ namespace BulkyBook.web
             });
 
             builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+            builder.Services.AddScoped(typeof(IProductService), typeof(ProductService));
 
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
 

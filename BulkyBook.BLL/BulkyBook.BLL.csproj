@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\BulkyBook.DAL\BulkyBook.DAL.csproj" />
+		<ProjectReference Include="..\BulkyBook.Model\BulkyBook.Model.csproj" />
+		<ProjectReference Include="..\BulkyBook.Utility\BulkyBook.Utility.csproj" />
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+</Project>

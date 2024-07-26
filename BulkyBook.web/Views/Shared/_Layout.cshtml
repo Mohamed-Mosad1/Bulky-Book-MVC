@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/datatables/css/jquery.dataTables.min.css" />
+
 </head>
 <body>
     <header>
@@ -45,12 +47,17 @@
             </div>
         </nav>
     </header>
-    <div class="container my-5">
+    <div class="container-fluid container-md my-5">
         <main role="main" class="pb-3">
-            <partial name="_Notification" />
-            @RenderBody()
+            <div class="row">
+                <div class="col-12">
+                    <partial name="_Notification" />
+                    @RenderBody()
+                </div>
+            </div>
         </main>
     </div>
+
 
     <footer class="border-top fixed-bottom text-center footer text-light py-3 bg-primary">
         <div class="container">
@@ -60,6 +67,9 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

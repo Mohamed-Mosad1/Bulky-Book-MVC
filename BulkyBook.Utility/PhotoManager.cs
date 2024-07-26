@@ -1,5 +1,9 @@
 ﻿// Ignore Spelling: env
 
+
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+
 namespace BulkyBook.Utility
 {
     public static class PhotoManager
@@ -9,7 +13,7 @@ namespace BulkyBook.Utility
         public static bool IsValidFile(IFormFile file)
         {
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-            return file.Length > 0 && file.Length <= 1048576 && _permittedExtensions.Contains(extension);
+            return file.Length > 0 && file.Length < 5242880 && _permittedExtensions.Contains(extension);
         }
 
         public static async Task<string> UploadFileAsync(IFormFile file, string PathName, IWebHostEnvironment env)
