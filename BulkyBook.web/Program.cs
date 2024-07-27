@@ -6,6 +6,9 @@ using BulkyBook.DAL.Repositories;
 using BulkyBook.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using BulkyBook.Model.Identity;
 
 namespace BulkyBook.web
 {
@@ -17,13 +20,19 @@ namespace BulkyBook.web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddScoped(typeof(IEmailSender), typeof(EmailSender));
 
             builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
             builder.Services.AddScoped(typeof(IProductService), typeof(ProductService));
@@ -33,18 +42,23 @@ namespace BulkyBook.web
 
             var app = builder.Build();
 
-            #region Apple All Pending Migrations
+            #region Apple All Pending Migrations and Data Seeding
 
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 var dbContext = services.GetRequiredService<ApplicationDbContext>();
                 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();
                 var logger = loggerFactory.CreateLogger<Program>();
 
                 try
                 {
                     await dbContext.Database.MigrateAsync();
+                    await ApplicationDbContextSeed.SeedRolesAsync(roleManager);
+                    await ApplicationDbContextSeed.SeedAdminAsync(userManager);
+                    await ApplicationDbContextSeed.SeedProductsAsync(dbContext);
                 }
                 catch (Exception ex)
                 {
@@ -70,6 +84,7 @@ namespace BulkyBook.web
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapRazorPages();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
