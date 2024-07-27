@@ -5,6 +5,7 @@ using BulkyBook.DAL.InterFaces;
 using BulkyBook.DAL.Repositories;
 using BulkyBook.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace BulkyBook.web
 {
@@ -21,6 +22,8 @@ namespace BulkyBook.web
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
             builder.Services.AddScoped(typeof(IProductService), typeof(ProductService));
@@ -64,6 +67,7 @@ namespace BulkyBook.web
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
