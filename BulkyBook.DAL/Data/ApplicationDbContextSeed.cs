@@ -4,11 +4,6 @@ using BulkyBook.Model;
 using BulkyBook.Model.Identity;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BulkyBook.DAL.Data
 {
@@ -35,7 +30,7 @@ namespace BulkyBook.DAL.Data
                     Email = SD.Admin_Email,
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true,
-                    
+
                 };
 
                 await userManager.CreateAsync(user, SD.Admin_Password);

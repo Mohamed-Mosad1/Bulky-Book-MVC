@@ -1,7 +1,6 @@
 ﻿// Ignore Spelling: BLL
 
 using BulkyBook.Model;
-using BulkyBook.Model.ViewModels;
 using Microsoft.AspNetCore.Http;
 
 namespace BulkyBook.BLL.Services.Contract

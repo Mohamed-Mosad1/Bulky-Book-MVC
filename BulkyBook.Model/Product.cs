@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-
-namespace BulkyBook.Model
+﻿namespace BulkyBook.Model
 {
     public class Product
     {

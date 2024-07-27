@@ -15,7 +15,7 @@ namespace BulkyBook.web.Areas.Customer.Controllers
         private readonly IMapper _mapper;
 
         public HomeController(
-            ILogger<HomeController> logger, 
+            ILogger<HomeController> logger,
             IProductService productService,
             IMapper mapper
             )

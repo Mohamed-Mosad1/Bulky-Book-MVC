@@ -95,7 +95,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteImage(int? id)
         {
-            if ( !id.HasValue || id == 0)
+            if (!id.HasValue || id == 0)
                 return NotFound();
 
             var image = await _productService.GetImageByIdAsync(id.Value);
