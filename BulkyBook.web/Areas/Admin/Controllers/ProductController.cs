@@ -4,11 +4,14 @@ using AutoMapper;
 using BulkyBook.BLL.Services.Contract;
 using BulkyBook.Model;
 using BulkyBook.Model.ViewModels;
+using BulkyBook.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BulkyBook.web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
