@@ -24,7 +24,7 @@ namespace BulkyBook.BLL.Services
             _env = env;
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<IReadOnlyList<Product>> GetAllProductsAsync()
         {
             var spec = new ProductWithCategoryAndImagesSpecification();
 

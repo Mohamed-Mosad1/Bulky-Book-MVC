@@ -3,7 +3,7 @@ using BulkyBook.BLL.Services.Contract;
 using BulkyBook.DAL.Data;
 using BulkyBook.DAL.InterFaces;
 using BulkyBook.DAL.Repositories;
-using BulkyBook.web.Helpers;
+using BulkyBook.Utility;
 using Microsoft.EntityFrameworkCore;
 
 namespace BulkyBook.web

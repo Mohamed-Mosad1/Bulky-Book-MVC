@@ -2,7 +2,7 @@
 using BulkyBook.Model;
 using BulkyBook.Model.ViewModels;
 
-namespace BulkyBook.web.Helpers
+namespace BulkyBook.Utility
 {
     public class MappingProfiles : Profile
     {

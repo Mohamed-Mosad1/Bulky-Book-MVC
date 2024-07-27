@@ -9,7 +9,7 @@ namespace BulkyBook.BLL.Services.Contract
     public interface IProductService
     {
         Task<Product?> GetProductByIdAsync(int id);
-        Task<IEnumerable<Product>> GetAllProductsAsync();
+        Task<IReadOnlyList<Product>> GetAllProductsAsync();
         Task<bool> SaveProductAsync(Product productVM, List<IFormFile> files);
         Task<ProductImage?> GetImageByIdAsync(int id);
         Task<bool> DeleteImageByIdAsync(int id, ProductImage productImage);

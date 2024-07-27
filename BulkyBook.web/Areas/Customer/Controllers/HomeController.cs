@@ -1,4 +1,7 @@
+using AutoMapper;
+using BulkyBook.BLL.Services.Contract;
 using BulkyBook.Model;
+using BulkyBook.Model.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -8,15 +11,36 @@ namespace BulkyBook.web.Areas.Customer.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IProductService _productService;
+        private readonly IMapper _mapper;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(
+            ILogger<HomeController> logger, 
+            IProductService productService,
+            IMapper mapper
+            )
         {
             _logger = logger;
+            _productService = productService;
+            _mapper = mapper;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var products = await _productService.GetAllProductsAsync();
+
+            var productsVM = _mapper.Map<IReadOnlyList<ProductVM>>(products);
+
+            return View(productsVM);
+        }
+
+        public async Task<IActionResult> Details(int productId)
+        {
+            var product = await _productService.GetProductByIdAsync(productId);
+
+            var productVM = _mapper.Map<ProductVM>(product);
+
+            return View(productVM);
         }
 
         public IActionResult Privacy()

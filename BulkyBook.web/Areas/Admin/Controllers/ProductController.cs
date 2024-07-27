@@ -123,10 +123,10 @@ namespace BulkyBook.web.Areas.Admin.Controllers
         #region API CALLS
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IReadOnlyList<ProductVM>>> GetAll()
         {
             var products = await _productService.GetAllProductsAsync();
-            var mappedProducts = _mapper.Map<IEnumerable<ProductVM>>(products);
+            var mappedProducts = _mapper.Map<IReadOnlyList<ProductVM>>(products);
 
             return Json(new { data = mappedProducts });
         }
