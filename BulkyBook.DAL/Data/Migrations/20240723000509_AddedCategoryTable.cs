@@ -26,15 +26,15 @@ namespace BulkyBook.DAL.Migrations
                     table.PrimaryKey("PK_Categories", x => x.Id);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Categories",
-                columns: new[] { "Id", "DisplayOrder", "Name" },
-                values: new object[,]
-                {
-                    { 1, 1, "Action" },
-                    { 2, 2, "SciFi" },
-                    { 3, 3, "History" }
-                });
+            //migrationBuilder.InsertData(
+            //    table: "Categories",
+            //    columns: new[] { "Id", "DisplayOrder", "Name" },
+            //    values: new object[,]
+            //    {
+            //        { 1, 1, "Action" },
+            //        { 2, 2, "SciFi" },
+            //        { 3, 3, "History" }
+            //    });
         }
 
         /// <inheritdoc />

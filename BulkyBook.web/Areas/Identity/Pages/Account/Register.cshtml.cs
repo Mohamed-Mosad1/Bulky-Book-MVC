@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using BulkyBook.DAL.InterFaces;
+using BulkyBook.Model;
 using BulkyBook.Model.Identity;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authentication;
@@ -23,24 +25,25 @@ namespace BulkyBook.web.Areas.Identity.Pages.Account
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUserStore<AppUser> _userStore;
         private readonly IUserEmailStore<AppUser> _emailStore;
-        private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ILogger<RegisterModel> _logger;
 
         public RegisterModel(
+            SignInManager<AppUser> signInManager,
             UserManager<AppUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IUserStore<AppUser> userStore,
-            SignInManager<AppUser> signInManager,
-            ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ILogger<RegisterModel> logger
+            )
         {
+            _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
-            _signInManager = signInManager;
-            _logger = logger;
             _emailSender = emailSender;
+            _logger = logger;
         }
 
         /// <summary>
@@ -95,6 +98,11 @@ namespace BulkyBook.web.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            public string UserName { get; set; }
+            public string City { get; set; }
+            public string Country { get; set; }
+            public int CompanyId { get; set; }
         }
 
 
@@ -112,7 +120,10 @@ namespace BulkyBook.web.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                user.City = Input.City;
+                user.Country = Input.Country;
+
+                await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
 

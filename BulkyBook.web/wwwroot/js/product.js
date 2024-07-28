@@ -75,3 +75,39 @@ function Delete(url) {
         }
     });
 }
+
+
+document.getElementById('fileUpload').addEventListener('change', function () {
+    var files = this.files;
+    var errorContainer = document.getElementById('fileUploadError');
+    var permittedExtensions = ['.jpg', '.jpeg', '.png'];
+    var maxSize = 5242880; // 5 MB in bytes
+    var isValid = true;
+    var errorMessage = '';
+
+    for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var fileExtension = file.name.split('.').pop().toLowerCase();
+
+        if (!permittedExtensions.includes('.' + fileExtension)) {
+            isValid = false;
+            errorMessage = 'Invalid file type. Only JPG, JPEG, and PNG are allowed.';
+            break;
+        }
+
+        if (file.size > maxSize) {
+            isValid = false;
+            errorMessage = 'File size must be less than 10 MB.';
+            break;
+        }
+    }
+
+    if (!isValid) {
+        errorContainer.textContent = errorMessage;
+        errorContainer.style.display = 'block';
+        this.value = ''; // Clear the file input
+    } else {
+        errorContainer.textContent = '';
+        errorContainer.style.display = 'none';
+    }
+});
