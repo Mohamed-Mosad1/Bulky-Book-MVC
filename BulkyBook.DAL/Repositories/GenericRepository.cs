@@ -1,11 +1,12 @@
 ﻿using BulkyBook.DAL.Data;
 using BulkyBook.DAL.InterFaces;
 using BulkyBook.DAL.Specifications;
+using BulkyBook.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace BulkyBook.DAL.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : BaseModel
     {
         private readonly ApplicationDbContext _dbContext;
 

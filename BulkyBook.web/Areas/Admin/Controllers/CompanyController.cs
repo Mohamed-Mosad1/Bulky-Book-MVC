@@ -80,7 +80,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
                     _unitOfWork.Repository<Company>().Update(company);
                     TempData["success"] = "Product updated successfully";
                     await _unitOfWork.CompleteAsync();
-                    
+
                     return RedirectToAction(nameof(Upsert), new { id = company.Id });
                 }
 

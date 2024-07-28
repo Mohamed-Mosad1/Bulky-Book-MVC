@@ -1,6 +1,5 @@
 using AutoMapper;
 using BulkyBook.BLL.Services.Contract;
-using BulkyBook.Model;
 using BulkyBook.Model.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;

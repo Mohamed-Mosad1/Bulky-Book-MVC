@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using BulkyBook.DAL.InterFaces;
-using BulkyBook.Model;
 using BulkyBook.Model.Identity;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authentication;
