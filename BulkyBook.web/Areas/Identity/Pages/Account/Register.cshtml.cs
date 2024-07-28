@@ -102,7 +102,7 @@ namespace BulkyBook.web.Areas.Identity.Pages.Account
             public string UserName { get; set; }
             public string City { get; set; }
             public string Country { get; set; }
-            public int CompanyId { get; set; }
+
         }
 
 

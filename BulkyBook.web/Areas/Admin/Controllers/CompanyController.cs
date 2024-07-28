@@ -57,7 +57,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Upsert([FromRoute] int id, Company company)
+        public async Task<IActionResult> Upsert([FromRoute] int id, Company company)
         {
             if (id != company.Id)
                 return BadRequest();
@@ -71,14 +71,19 @@ namespace BulkyBook.web.Areas.Admin.Controllers
                 {
                     _unitOfWork.Repository<Company>().Add(company);
                     TempData["success"] = "Product created successfully";
+                    await _unitOfWork.CompleteAsync();
+
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
                     _unitOfWork.Repository<Company>().Update(company);
                     TempData["success"] = "Product updated successfully";
+                    await _unitOfWork.CompleteAsync();
+                    
                     return RedirectToAction(nameof(Upsert), new { id = company.Id });
                 }
+
             }
             catch (Exception ex)
             {

@@ -66,9 +66,9 @@ namespace BulkyBook.web
                     await dbContext.Database.MigrateAsync();
                     await ApplicationDbContextSeed.SeedRolesAsync(roleManager);
                     await ApplicationDbContextSeed.SeedAdminAsync(userManager);
+                    await ApplicationDbContextSeed.SeedCategoriesAsync(dbContext);
                     await ApplicationDbContextSeed.SeedProductsAsync(dbContext);
                     await ApplicationDbContextSeed.SeedCompaniesAsync(dbContext);
-                    await ApplicationDbContextSeed.SeedCategoriesAsync(dbContext);
                 }
                 catch (Exception ex)
                 {
