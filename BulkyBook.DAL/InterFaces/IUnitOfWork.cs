@@ -1,10 +1,8 @@
-﻿using BulkyBook.Model;
-
-namespace BulkyBook.DAL.InterFaces
+﻿namespace BulkyBook.DAL.InterFaces
 {
     public interface IUnitOfWork : IAsyncDisposable
     {
-        IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseModel;
+        IGenericRepository<TEntity> Repository<TEntity>() where TEntity : class;
 
         Task<int> CompleteAsync();
     }

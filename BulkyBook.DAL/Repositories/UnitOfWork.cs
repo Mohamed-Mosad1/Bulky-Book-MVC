@@ -1,6 +1,5 @@
 ﻿using BulkyBook.DAL.Data;
 using BulkyBook.DAL.InterFaces;
-using BulkyBook.Model;
 using System.Collections;
 
 namespace BulkyBook.DAL.Repositories
@@ -15,7 +14,7 @@ namespace BulkyBook.DAL.Repositories
             _dbContext = dbContext;
             _repositories = new Hashtable();
         }
-        public IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseModel
+        public IGenericRepository<TEntity> Repository<TEntity>() where TEntity : class
         {
             var key = typeof(TEntity).Name;
             if (!_repositories.ContainsKey(key))

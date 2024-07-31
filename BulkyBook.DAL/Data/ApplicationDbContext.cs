@@ -1,4 +1,5 @@
 ﻿using BulkyBook.Model;
+using BulkyBook.Model.Cart;
 using BulkyBook.Model.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ namespace BulkyBook.DAL.Data
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
 
 
     }

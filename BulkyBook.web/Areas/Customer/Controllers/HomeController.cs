@@ -1,8 +1,11 @@
 using AutoMapper;
 using BulkyBook.BLL.Services.Contract;
+using BulkyBook.DAL.InterFaces;
 using BulkyBook.Model.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BulkyBook.web.Areas.Customer.Controllers
 {
@@ -11,16 +14,19 @@ namespace BulkyBook.web.Areas.Customer.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IProductService _productService;
+        private readonly IShoppingCartService _shoppingCartService;
         private readonly IMapper _mapper;
 
         public HomeController(
-            ILogger<HomeController> logger,
             IProductService productService,
-            IMapper mapper
+            IShoppingCartService shoppingCartService,
+            IMapper mapper,
+            ILogger<HomeController> logger
             )
         {
             _logger = logger;
             _productService = productService;
+            _shoppingCartService = shoppingCartService;
             _mapper = mapper;
         }
 
@@ -42,9 +48,23 @@ namespace BulkyBook.web.Areas.Customer.Controllers
             return View(productVM);
         }
 
-        public IActionResult Privacy()
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Details([FromQuery] int productId, int quantity)
         {
-            return View();
+            //if (productId != 0)
+            //    shoppingCartItem.ProductId = productId;
+
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId is not null)
+            {
+                await _shoppingCartService.AddOrUpdateToCartAsync(userId, productId, quantity);
+
+                TempData["success"] = "Cart updated successfully";
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

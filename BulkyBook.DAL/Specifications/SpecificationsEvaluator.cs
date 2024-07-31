@@ -1,24 +1,23 @@
-﻿using BulkyBook.DAL.Specifications;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace BulkyBook.DAL.Repositories
+namespace BulkyBook.DAL.Specifications
 {
     public static class SpecificationsEvaluator<TEntity> where TEntity : class
     {
         public static IQueryable<TEntity> GetQuery(IQueryable<TEntity> inputQuery, IBaseSpecifications<TEntity> spec)
         {
             var query = inputQuery;
-            if (spec.Criteria != null)
+            if (spec.Criteria is not null)
             {
                 query = query.Where(spec.Criteria);
             }
 
-            if (spec.OrderBy != null)
+            if (spec.OrderBy is not null)
             {
                 query = query.OrderBy(spec.OrderBy);
             }
 
-            if (spec.OrderByDescending != null)
+            if (spec.OrderByDescending is not null)
             {
                 query = query.OrderByDescending(spec.OrderByDescending);
             }

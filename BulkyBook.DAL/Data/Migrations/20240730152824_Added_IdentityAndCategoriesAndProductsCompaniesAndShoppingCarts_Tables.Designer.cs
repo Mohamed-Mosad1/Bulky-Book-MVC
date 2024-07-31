@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BulkyBook.DAL.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240728172837_Added_CompanyId_FK")]
-    partial class Added_CompanyId_FK
+    [Migration("20240730152824_Added_IdentityAndCategoriesAndProductsCompaniesAndShoppingCarts_Tables")]
+    partial class Added_IdentityAndCategoriesAndProductsCompaniesAndShoppingCarts_Tables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,51 @@ namespace BulkyBook.DAL.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("BulkyBook.Model.Cart.ShoppingCart", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ClientSecret")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentIntentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("ShoppingCarts");
+                });
+
+            modelBuilder.Entity("BulkyBook.Model.Cart.ShoppingCartItem", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShoppingCartId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ShoppingCartId");
+
+                    b.ToTable("ShoppingCartItems");
+                });
 
             modelBuilder.Entity("BulkyBook.Model.Category", b =>
                 {
@@ -364,6 +409,32 @@ namespace BulkyBook.DAL.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BulkyBook.Model.Cart.ShoppingCart", b =>
+                {
+                    b.HasOne("BulkyBook.Model.Identity.AppUser", "AppUser")
+                        .WithMany("ShoppingCarts")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("BulkyBook.Model.Cart.ShoppingCartItem", b =>
+                {
+                    b.HasOne("BulkyBook.Model.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("BulkyBook.Model.Cart.ShoppingCart", null)
+                        .WithMany("CartItems")
+                        .HasForeignKey("ShoppingCartId");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("BulkyBook.Model.Identity.AppUser", b =>
                 {
                     b.HasOne("BulkyBook.Model.Company", "Company")
@@ -444,6 +515,16 @@ namespace BulkyBook.DAL.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BulkyBook.Model.Cart.ShoppingCart", b =>
+                {
+                    b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("BulkyBook.Model.Identity.AppUser", b =>
+                {
+                    b.Navigation("ShoppingCarts");
                 });
 
             modelBuilder.Entity("BulkyBook.Model.Product", b =>

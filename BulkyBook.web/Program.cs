@@ -44,6 +44,7 @@ namespace BulkyBook.web
 
             builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
             builder.Services.AddScoped(typeof(IProductService), typeof(ProductService));
+            builder.Services.AddScoped(typeof(IShoppingCartService), typeof(ShoppingCartService));
 
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
