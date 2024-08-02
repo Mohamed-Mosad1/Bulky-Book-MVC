@@ -9,10 +9,13 @@ namespace BulkyBook.Utility
     {
         public MappingProfiles()
         {
-            CreateMap<ProductVM, Product>().ReverseMap();
-            CreateMap<ProductImageVM, ProductImage>().ReverseMap();
+            CreateMap<Product, ProductVM>().ReverseMap();
+            CreateMap<ProductImage, ProductImageVM>().ReverseMap();
+
             CreateMap<ShoppingCart, ShoppingCartVM>().ReverseMap();
-            CreateMap<ShoppingCartItem, ShoppingCartItemVM>().ReverseMap();
+            CreateMap<ShoppingCartItem, ShoppingCartItemVM>()
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Product.ProductImages.FirstOrDefault().ImageUrl))
+                .ReverseMap();
         }
     }
 }

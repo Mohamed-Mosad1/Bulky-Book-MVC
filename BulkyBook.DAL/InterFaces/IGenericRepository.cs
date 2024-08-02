@@ -1,11 +1,12 @@
 ﻿using BulkyBook.DAL.Specifications;
+using BulkyBook.Model;
 
 namespace BulkyBook.DAL.InterFaces
 {
     public interface IGenericRepository<T> where T : class
     {
         Task<IReadOnlyList<T>> GetAllAsync();
-        Task<T?> GetByIdAsync(int id);
+        Task<T?> GetByIdAsync<Type>(Type id);
         Task<IReadOnlyList<T>> GetAllWithSpecAsync(IBaseSpecifications<T> spec);
         Task<T?> GetWithSpecAsync(IBaseSpecifications<T> spec);
         void Add(T entity);

@@ -1,20 +1,16 @@
-﻿using AutoMapper;
-using BulkyBook.DAL.Data;
-using BulkyBook.DAL.InterFaces;
+﻿using BulkyBook.DAL.InterFaces;
+using BulkyBook.DAL.Specifications.ShoppingCarts;
 using BulkyBook.Model.Cart;
-using Microsoft.EntityFrameworkCore;
 
 namespace BulkyBook.DAL.Repositories
 {
-    public class ShoppingCartService : IShoppingCartService
+	public class ShoppingCartService : IShoppingCartService
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ShoppingCartService(ApplicationDbContext dbContext, IMapper mapper)
+        public ShoppingCartService(IUnitOfWork unitOfWork)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+			_unitOfWork = unitOfWork;
         }
 
         public async Task AddOrUpdateToCartAsync(string userId, int productId, int quantity)
@@ -37,16 +33,13 @@ namespace BulkyBook.DAL.Repositories
                 shoppingCart.CartItems.Add(newCartItem);
             }
 
-            await _dbContext.SaveChangesAsync();
+            await _unitOfWork.CompleteAsync();
         }
 
         public async Task<ShoppingCart> GetOrCreateCartAsync(string userId)
         {
-            var shoppingCart = await _dbContext.ShoppingCarts
-                              .Include(c => c.CartItems)
-                              .ThenInclude(c => c.Product)
-                              .ThenInclude(c => c.ProductImages)
-                              .FirstOrDefaultAsync(c => c.AppUserId == userId);
+            var spec = new ShoppingCartWithCartItemSpec(userId);
+            var shoppingCart = await _unitOfWork.Repository<ShoppingCart>().GetWithSpecAsync(spec);
 
             if (shoppingCart is null)
             {
@@ -55,46 +48,44 @@ namespace BulkyBook.DAL.Repositories
                     AppUserId = userId
                 };
 
-                _dbContext.ShoppingCarts.Add(shoppingCart);
-                await _dbContext.SaveChangesAsync();
+                _unitOfWork.Repository<ShoppingCart>().Add(shoppingCart);
+                await _unitOfWork.CompleteAsync();
             }
-
 
             return shoppingCart;
         }
 
         public async Task<ShoppingCartItem?> GetCartItemByIdAsync(string cartItemId)
         {
-            return await _dbContext.ShoppingCartItems.FirstOrDefaultAsync(c => c.Id == cartItemId);
+            return await _unitOfWork.Repository<ShoppingCartItem>().GetByIdAsync(cartItemId);
         }
 
-        public async Task<IEnumerable<ShoppingCart>> GetAllCartsAsync(string userId)
-        {
-            return await _dbContext.ShoppingCarts.Where(c => c.AppUserId == userId).ToListAsync();
-        }
+        //public async Task<IEnumerable<ShoppingCart>> GetAllCartsAsync(string userId)
+        //{
+        //    return await _dbContext.ShoppingCarts.Where(c => c.AppUserId == userId).ToListAsync();
+        //}
 
         public async Task RemoveCartItemAsync(string cartItemId)
         {
-            var shoppingCartItem = await _dbContext.ShoppingCartItems
-                .FirstOrDefaultAsync(c => c.Id == cartItemId);
+            var shoppingCartItem = await _unitOfWork.Repository<ShoppingCartItem>().GetByIdAsync(cartItemId);
 
 
             if (shoppingCartItem is not null)
             {
-                _dbContext.ShoppingCartItems.Remove(shoppingCartItem);
-                await _dbContext.SaveChangesAsync();
+                _unitOfWork.Repository<ShoppingCartItem>().Delete(shoppingCartItem);
+                await _unitOfWork.CompleteAsync();
             }
         }
 
         public async Task RemoveCartAsync(string cartId)
         {
-            var shoppingCart = await _dbContext.ShoppingCarts.FirstOrDefaultAsync(x => x.Id == cartId);
+            var shoppingCart = await _unitOfWork.Repository<ShoppingCart>().GetByIdAsync(cartId);
 
             if (shoppingCart is not null)
             {
-                _dbContext.ShoppingCarts.Remove(shoppingCart);
+                _unitOfWork.Repository<ShoppingCart>().Delete(shoppingCart);
 
-                await _dbContext.SaveChangesAsync();
+                await _unitOfWork.CompleteAsync();
             }
         }
 
@@ -112,40 +103,41 @@ namespace BulkyBook.DAL.Repositories
 
         public async Task IncrementCartItemAsync(string cartItemId)
         {
-            var cartItem = await _dbContext.ShoppingCartItems.FirstOrDefaultAsync(u => u.Id == cartItemId);
+            var cartItem = await _unitOfWork.Repository<ShoppingCartItem>().GetByIdAsync(cartItemId);
             if (cartItem is not null)
             {
                 cartItem.Quantity += 1;
-                _dbContext.ShoppingCartItems.Update(cartItem);
-                await _dbContext.SaveChangesAsync();
+                _unitOfWork.Repository<ShoppingCartItem>().Update(cartItem);
+                await _unitOfWork.CompleteAsync();
             }
         }
 
         public async Task DecrementCartItemAsync(string cartItemId)
         {
-            var cartItem = await _dbContext.ShoppingCartItems.FirstOrDefaultAsync(u => u.Id == cartItemId);
+            var cartItem = await _unitOfWork.Repository<ShoppingCartItem>().GetByIdAsync(cartItemId);
             if (cartItem is not null)
             {
                 if (cartItem.Quantity <= 1)
                 {
-                    _dbContext.ShoppingCartItems.Remove(cartItem);
+                    _unitOfWork.Repository<ShoppingCartItem>().Delete(cartItem);
 
-                    var cart = await _dbContext.ShoppingCarts
-                        .Include(c => c.CartItems)
-                        .FirstOrDefaultAsync(c => c.Id == cartItem.Id);
+                    var spec = new ShoppingCartWithCartItemSpec(cartItem.Id);
+                    var cart = await _unitOfWork.Repository<ShoppingCart>().GetWithSpecAsync(spec);
+                        //.Include(c => c.CartItems)
+                        //.FirstOrDefaultAsync(c => c.Id == cartItem.Id);
 
                     if (cart is not null && !cart.CartItems.Any())
                     {
-                        _dbContext.ShoppingCarts.Remove(cart);
+                        _unitOfWork.Repository<ShoppingCart>().Delete(cart);
                     }
                 }
                 else
                 {
                     cartItem.Quantity -= 1;
-                    _dbContext.ShoppingCartItems.Update(cartItem);
+                    _unitOfWork.Repository<ShoppingCartItem>().Update(cartItem);
                 }
 
-                await _dbContext.SaveChangesAsync();
+                await _unitOfWork.CompleteAsync();
             }
         }
 

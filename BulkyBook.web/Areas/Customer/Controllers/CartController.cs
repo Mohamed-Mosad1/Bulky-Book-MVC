@@ -1,4 +1,6 @@
-﻿using BulkyBook.DAL.InterFaces;
+﻿using AutoMapper;
+using BulkyBook.DAL.InterFaces;
+using BulkyBook.Model.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -10,11 +12,13 @@ namespace BulkyBook.web.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IShoppingCartService _shoppingCartService;
+		private readonly IMapper _mapper;
 
-        public CartController(IShoppingCartService shoppingCartService)
+		public CartController(IShoppingCartService shoppingCartService, IMapper mapper)
         {
             _shoppingCartService = shoppingCartService;
-        }
+			_mapper = mapper;
+		}
 
         public async Task<IActionResult> Index()
         {
@@ -27,7 +31,9 @@ namespace BulkyBook.web.Areas.Customer.Controllers
 
                 cart.TotalPrice = totalPrice;
 
-                return View(cart);
+                var cartVM = _mapper.Map<ShoppingCartVM>(cart);
+
+                return View(cartVM);
             }
 
             return NotFound();
@@ -58,6 +64,23 @@ namespace BulkyBook.web.Areas.Customer.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Summary()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId is not null)
+            {
+                var cart = await _shoppingCartService.GetOrCreateCartAsync(userId);
+                decimal totalPrice = cart.CartItems
+                            .Sum(item => _shoppingCartService.GetPriceBasedOnQuantity(item) * item.Quantity);
+
+                cart.TotalPrice = totalPrice;
+
+                return View(cart);
+            }
+
+			return NotFound();
         }
 
     }

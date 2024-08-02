@@ -12,12 +12,12 @@ namespace BulkyBook.Model.ViewModels
         public int Quantity { get; set; }
 
         public string AppUserId { get; set; } = null!;
+		public string ShoppingCartId { get; set; } = null!;
 
-        public int ProductId { get; set; }
-        public string Title { get; set; } = null!;
-        public string? Description { get; set; }
+		public int ProductId { get; set; }
+        public string ProductTitle { get; set; } = null!;
+        public string? ProductDescription { get; set; }
         public decimal ProductPrice { get; set; }
-        public decimal TotalPrice { get; set; }
-        public List<ProductImageVM>? ProductImages { get; set; } = new List<ProductImageVM>();
+        public string? ImageUrl { get; set; }
     }
 }

@@ -9,6 +9,7 @@ namespace BulkyBook.Model.ViewModels
         public string? PaymentIntentId { get; set; }
         public string? ClientSecret { get; set; }
         public string AppUserId { get; set; } = null!;
+		public decimal TotalPrice { get; set; }
 
-    }
+	}
 }

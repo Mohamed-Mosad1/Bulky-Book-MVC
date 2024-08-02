@@ -8,7 +8,9 @@ namespace BulkyBook.DAL.Specifications
 
         public List<Expression<Func<T, object>>> Includes { get; set; } = new List<Expression<Func<T, object>>>();
 
-        public Expression<Func<T, object>> OrderBy { get; set; } = null!;
+		public List<string> IncludeStrings { get; set; } = new List<string>(); 
+
+		public Expression<Func<T, object>> OrderBy { get; set; } = null!;
 
         public Expression<Func<T, object>> OrderByDescending { get; set; } = null!;
 
@@ -25,7 +27,17 @@ namespace BulkyBook.DAL.Specifications
             Criteria = criteria;
         }
 
-        public void AddOrderBy(Expression<Func<T, object>> OrderByExpression)
+		public void AddInclude(Expression<Func<T, object>> includeExpression)
+		{
+			Includes.Add(includeExpression);
+		}
+
+		public void AddInclude(string includeString)
+		{
+			IncludeStrings.Add(includeString);
+		}
+
+		public void AddOrderBy(Expression<Func<T, object>> OrderByExpression)
         {
             OrderBy = OrderByExpression;
         }

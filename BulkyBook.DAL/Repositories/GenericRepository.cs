@@ -53,7 +53,7 @@ namespace BulkyBook.DAL.Repositories
             return await _dbContext.Set<T>().ToListAsync();
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T?> GetByIdAsync<Type>(Type id)
         {
             return await _dbContext.FindAsync<T>(id);
         }
