@@ -7,6 +7,7 @@ namespace BulkyBook.DAL.Specifications.ShoppingCarts
         public ShoppingCartWithCartItemSpec(string userId)
         : base(x => x.AppUserId == userId)
         {
+            AddInclude(x => x.AppUser);
             AddInclude(x => x.CartItems);
             AddInclude("CartItems.Product");
             AddInclude("CartItems.Product.ProductImages");

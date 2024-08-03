@@ -28,7 +28,9 @@ namespace BulkyBook.DAL.Data
                 {
                     UserName = SD.Role_Admin,
                     Email = SD.Admin_Email,
+                    Street = "123 Main St",
                     City = "Alexandria",
+                    State = "Alexandria",
                     Country = "Egypt",
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true,
@@ -38,6 +40,7 @@ namespace BulkyBook.DAL.Data
                 await userManager.CreateAsync(user, SD.Admin_Password);
                 await userManager.AddToRoleAsync(user, SD.Role_Admin);
             }
+
         }
 
         public static async Task SeedProductsAsync(ApplicationDbContext dbContext)

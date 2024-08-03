@@ -2,16 +2,16 @@
 {
     public class OrderAddress
     {
-        //private OrderAddress() { }
+        private OrderAddress() { }
 
-        //public OrderAddress(string fullName, string city, string street, string state, string phoneNumber)
-        //{
-        //    FullName = fullName;
-        //    Street = street;
-        //    City = city;
-        //    State = state;
-        //    PhoneNumber = phoneNumber;
-        //}
+        public OrderAddress(string fullName, string city, string street, string state, string phoneNumber)
+        {
+            FullName = fullName;
+            Street = street;
+            City = city;
+            State = state;
+            PhoneNumber = phoneNumber;
+        }
 
         public string FullName { get; set; } = null!;
         public string Street { get; set; } = null!;

@@ -1,13 +1,7 @@
 ﻿@model ShoppingCartVM
 
-=
-@{
-    var orderAddress = new OrderAddress();
-}
-
-<form method="post">
-    <br />
-    <div class="container">
+<form method="post" asp-action="PlaceOrder">
+    <div class="container mb-4">
         <div class="card shadow border-0">
 
             <div class="card-header bg-secondary bg-gradient text-light ml-0 py-4">
@@ -33,20 +27,11 @@
                             </div>
                             <div class="row my-1">
                                 <div class="col-3">
-                                    <label>Name</label>
+                                    <label>Full Name</label>
                                 </div>
                                 <div class="col-9">
-                                    <input asp-for="@orderAddress.FullName" class="form-control" />
-                                    <span asp-validation-for="@orderAddress.FullName" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="row my-1">
-                                <div class="col-3">
-                                    <label>Phone</label>
-                                </div>
-                                <div class="col-9">
-                                    <input asp-for="@orderAddress.PhoneNumber" class="form-control" />
-                                    <span asp-validation-for="@orderAddress.PhoneNumber" class="text-danger"></span>
+                                    <input asp-for="UserName" class="form-control" />
+                                    <span asp-validation-for="UserName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="row my-1">
@@ -54,8 +39,8 @@
                                     <label>Street Address</label>
                                 </div>
                                 <div class="col-9">
-                                    <input asp-for="@orderAddress.Street" class="form-control" />
-                                    <span asp-validation-for="@orderAddress.Street" class="text-danger"></span>
+                                    <input asp-for="Street" class="form-control" />
+                                    <span asp-validation-for="Street" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="row my-1">
@@ -63,8 +48,8 @@
                                     <label>City</label>
                                 </div>
                                 <div class="col-9">
-                                    <input asp-for="@orderAddress.City" class="form-control" />
-                                    <span asp-validation-for="@orderAddress.City" class="text-danger"></span>
+                                    <input asp-for="City" class="form-control" />
+                                    <span asp-validation-for="City" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="row my-1">
@@ -72,8 +57,17 @@
                                     <label>State</label>
                                 </div>
                                 <div class="col-9">
-                                    <input asp-for="@orderAddress.State" class="form-control" />
-                                    <span asp-validation-for="@orderAddress.State" class="text-danger"></span>
+                                    <input asp-for="State" class="form-control" />
+                                    <span asp-validation-for="State" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row my-1">
+                                <div class="col-3">
+                                    <label>Phone</label>
+                                </div>
+                                <div class="col-9">
+                                    <input asp-for="PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
@@ -103,7 +97,7 @@
                 </div>
             </div>
             <div class="card-footer">
-                <div class="row">
+                <div class="row pb-3">
                     <div class="col-12 col-md-8 pt-2">
                         <p style="color:maroon; font-size:14px;">
                             Estimate Arrival Date:
@@ -118,3 +112,7 @@
         </div>
     </div>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

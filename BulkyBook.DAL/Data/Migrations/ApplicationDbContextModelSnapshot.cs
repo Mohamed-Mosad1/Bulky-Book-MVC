@@ -41,7 +41,7 @@ namespace BulkyBook.DAL.Data.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("ShoppingCarts");
+                    b.ToTable("ShoppingCarts", (string)null);
                 });
 
             modelBuilder.Entity("BulkyBook.Model.Cart.ShoppingCartItem", b =>
@@ -65,7 +65,7 @@ namespace BulkyBook.DAL.Data.Migrations
 
                     b.HasIndex("ShoppingCartId");
 
-                    b.ToTable("ShoppingCartItems");
+                    b.ToTable("ShoppingCartItems", (string)null);
                 });
 
             modelBuilder.Entity("BulkyBook.Model.Category", b =>
@@ -86,7 +86,7 @@ namespace BulkyBook.DAL.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("BulkyBook.Model.Company", b =>
@@ -121,7 +121,7 @@ namespace BulkyBook.DAL.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("BulkyBook.Model.Identity.AppUser", b =>
@@ -253,7 +253,7 @@ namespace BulkyBook.DAL.Data.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("BulkyBook.Model.OrdersAggregate.OrderItem", b =>
@@ -282,7 +282,7 @@ namespace BulkyBook.DAL.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("BulkyBook.Model.Product", b =>
@@ -327,7 +327,7 @@ namespace BulkyBook.DAL.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("BulkyBook.Model.ProductImage", b =>
@@ -349,7 +349,7 @@ namespace BulkyBook.DAL.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImages", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -532,7 +532,7 @@ namespace BulkyBook.DAL.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("BulkyBook.Model.OrdersAggregate.OrderAddress", "OrderAddress", b1 =>
+                    b.OwnsOne("BulkyBook.Model.OrdersAggregate.Order.OrderAddress#BulkyBook.Model.OrdersAggregate.OrderAddress", "OrderAddress", b1 =>
                         {
                             b1.Property<string>("OrderId")
                                 .HasColumnType("nvarchar(450)");
@@ -559,7 +559,7 @@ namespace BulkyBook.DAL.Data.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("OrderAddresses");
+                            b1.ToTable("Orders", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");

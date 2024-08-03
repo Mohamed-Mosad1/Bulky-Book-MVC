@@ -4,17 +4,17 @@
     {
         private OrderItem() { }
 
-        public OrderItem(Product productOrdered, decimal price, int quantity)
+        public OrderItem(ProductItemOrdered productOrdered, decimal price, int quantity)
         {
             ProductOrdered = productOrdered;
             Price = price;
             Quantity = quantity;
         }
+        public ProductItemOrdered ProductOrdered { get; set; } = null!;
 
         public decimal Price { get; set; }
         public int Quantity { get; set; }
 
-        public int ProductId { get; set; }
-        public Product ProductOrdered { get; set; } = null!;
+        //public int ProductId { get; set; }
     }
 }

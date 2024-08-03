@@ -1,5 +1,7 @@
 ﻿// Ignore Spelling: App
 
+using BulkyBook.Model.OrdersAggregate;
+
 namespace BulkyBook.Model.ViewModels
 {
     public class ShoppingCartVM
@@ -9,7 +11,13 @@ namespace BulkyBook.Model.ViewModels
         public string? PaymentIntentId { get; set; }
         public string? ClientSecret { get; set; }
         public string AppUserId { get; set; } = null!;
-        public decimal TotalPrice { get; set; }
+        public string UserName { get; set; } = null!;
+        public string Street { get; set; } = null!;
+        public string State { get; set; } = null!;
+        public string City { get; set; } = null!;
+        public string Country { get; set; } = null!;
+        public string PhoneNumber { get; set; } = null!;
 
+        public decimal TotalPrice { get; set; }
     }
 }

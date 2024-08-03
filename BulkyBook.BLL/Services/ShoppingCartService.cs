@@ -45,7 +45,7 @@ namespace BulkyBook.BLL.Services
 
             if (shoppingCart is null)
             {
-                shoppingCart = new ShoppingCart
+                shoppingCart = new ShoppingCart()
                 {
                     AppUserId = userId
                 };
@@ -61,11 +61,6 @@ namespace BulkyBook.BLL.Services
         {
             return await _unitOfWork.Repository<ShoppingCartItem>().GetByIdAsync(cartItemId);
         }
-
-        //public async Task<IEnumerable<ShoppingCart>> GetAllCartsAsync(string userId)
-        //{
-        //    return await _dbContext.ShoppingCarts.Where(c => c.AppUserId == userId).ToListAsync();
-        //}
 
         public async Task RemoveCartItemAsync(string cartItemId)
         {

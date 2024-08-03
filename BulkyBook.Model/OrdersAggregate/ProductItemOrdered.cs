@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BulkyBook.Model.OrdersAggregate
+{
+    public class ProductItemOrdered
+    {
+        private ProductItemOrdered() { }
+        public ProductItemOrdered(int productId, string productTitle, string? imageUrl)
+        {
+            ProductId = productId;
+            ProductTitle = productTitle;
+            ImageUrl = imageUrl;
+        }
+
+        public int ProductId { get; set; }
+        public string ProductTitle { get; set; } = null!;
+        public string? ImageUrl { get; set; }
+    }
+}
