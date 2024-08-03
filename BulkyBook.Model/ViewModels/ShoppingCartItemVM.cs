@@ -12,9 +12,9 @@ namespace BulkyBook.Model.ViewModels
         public int Quantity { get; set; }
 
         public string AppUserId { get; set; } = null!;
-		public string ShoppingCartId { get; set; } = null!;
+        public string ShoppingCartId { get; set; } = null!;
 
-		public int ProductId { get; set; }
+        public int ProductId { get; set; }
         public string ProductTitle { get; set; } = null!;
         public string? ProductDescription { get; set; }
         public decimal ProductPrice { get; set; }

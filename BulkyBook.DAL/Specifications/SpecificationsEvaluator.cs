@@ -29,10 +29,10 @@ namespace BulkyBook.DAL.Specifications
 
             query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
 
-			// Apply Includes from string paths
-			query = spec.IncludeStrings.Aggregate(query, (current, include) => current.Include(include));
+            // Apply Includes from string paths
+            query = spec.IncludeStrings.Aggregate(query, (current, include) => current.Include(include));
 
-			return query;
+            return query;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿// Ignore Spelling: App
 
 using BulkyBook.Model.Cart;
+using BulkyBook.Model.OrdersAggregate;
 using Microsoft.AspNetCore.Identity;
 
 namespace BulkyBook.Model.Identity
@@ -16,5 +17,6 @@ namespace BulkyBook.Model.Identity
         public Company? Company { get; set; }
 
         public ICollection<ShoppingCart> ShoppingCarts { get; set; } = new HashSet<ShoppingCart>();
+        public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
     }
 }

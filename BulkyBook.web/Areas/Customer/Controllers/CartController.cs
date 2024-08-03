@@ -12,13 +12,13 @@ namespace BulkyBook.web.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IShoppingCartService _shoppingCartService;
-		private readonly IMapper _mapper;
+        private readonly IMapper _mapper;
 
-		public CartController(IShoppingCartService shoppingCartService, IMapper mapper)
+        public CartController(IShoppingCartService shoppingCartService, IMapper mapper)
         {
             _shoppingCartService = shoppingCartService;
-			_mapper = mapper;
-		}
+            _mapper = mapper;
+        }
 
         public async Task<IActionResult> Index()
         {
@@ -77,10 +77,12 @@ namespace BulkyBook.web.Areas.Customer.Controllers
 
                 cart.TotalPrice = totalPrice;
 
-                return View(cart);
+                var cartVM = _mapper.Map<ShoppingCartVM>(cart);
+
+                return View(cartVM);
             }
 
-			return NotFound();
+            return NotFound();
         }
 
     }

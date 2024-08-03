@@ -8,7 +8,7 @@ namespace BulkyBook.DAL.Specifications.ShoppingCarts
                 : base(x => x.Id == cartId)
         {
             Includes.Add(x => x.Product);
-			Includes.Add(x => x.Product.ProductImages);
+            Includes.Add(x => x.Product.ProductImages);
         }
     }
 }

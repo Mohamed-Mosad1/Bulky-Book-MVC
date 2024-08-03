@@ -1,5 +1,4 @@
 ﻿using BulkyBook.DAL.Specifications;
-using BulkyBook.Model;
 
 namespace BulkyBook.DAL.InterFaces
 {
