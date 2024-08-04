@@ -2,7 +2,7 @@
 {
     public class OrderAddress
     {
-        private OrderAddress() { }
+        public OrderAddress() { }
 
         public OrderAddress(string fullName, string city, string street, string state, string phoneNumber)
         {

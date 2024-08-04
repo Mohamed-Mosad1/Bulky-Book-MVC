@@ -98,27 +98,45 @@ namespace BulkyBook.web.Areas.Customer.Controllers
             return NotFound();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> PlaceOrder(Order order)
+        public IActionResult PlaceOrder()
         {
-            if (ModelState.IsValid)
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PlaceOrder(OrderVM orderVM)
+        {
+            if (!ModelState.IsValid)
+                return View(orderVM);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId is not null)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userId is not null)
+                var cartId = _shoppingCartService.GetShoppingCartAsync(userId).Result?.Id;
+                if (cartId is not null)
                 {
-                    var cart = await _shoppingCartService.GetOrCreateCartAsync(userId);
+                    var orderAddress = new OrderAddress(orderVM.OrderAddress.FullName, orderVM.OrderAddress.City, orderVM.OrderAddress.Street, orderVM.OrderAddress.State, orderVM.OrderAddress.PhoneNumber);
 
-                    var user = await _userManager.FindByIdAsync(userId);
-
-                    var orderAddress = new OrderAddress(user.UserName, user.City, user.Street, user.State, user.PhoneNumber);
-
-                    var orderCreated = await _orderService.CreateOrderAsync(userId, cart.Id, orderAddress);
-
-                    return View();
+                    var orderCreated = await _orderService.CreateOrderAsync(userId, cartId, orderAddress);
+                    if (orderCreated is not null)
+                    {
+                        TempData["success"] = "Order created successfully";
+                        await _shoppingCartService.RemoveCartAsync(cartId);
+                        return RedirectToAction(nameof(OrderConfirmation), new { orderId = orderCreated.Id });
+                    }
                 }
             }
 
-            return NotFound();
+            return BadRequest();
+        }
+
+        public IActionResult OrderConfirmation(string orderId)
+        {
+            if (string.IsNullOrEmpty(orderId))
+               return NotFound();
+            
+
+            return View(nameof(OrderConfirmation), orderId);
         }
 
     }

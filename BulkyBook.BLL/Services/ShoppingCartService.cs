@@ -57,6 +57,13 @@ namespace BulkyBook.BLL.Services
             return shoppingCart;
         }
 
+
+        public async Task<ShoppingCart?> GetShoppingCartAsync(string userId)
+        {
+            var spec = new ShoppingCartWithSpec(userId);
+            return await _unitOfWork.Repository<ShoppingCart>().GetWithSpecAsync(spec);
+        }
+
         public async Task<ShoppingCartItem?> GetCartItemByIdAsync(string cartItemId)
         {
             return await _unitOfWork.Repository<ShoppingCartItem>().GetByIdAsync(cartItemId);

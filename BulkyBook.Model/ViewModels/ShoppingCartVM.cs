@@ -1,7 +1,5 @@
 ﻿// Ignore Spelling: App
 
-using BulkyBook.Model.OrdersAggregate;
-
 namespace BulkyBook.Model.ViewModels
 {
     public class ShoppingCartVM
