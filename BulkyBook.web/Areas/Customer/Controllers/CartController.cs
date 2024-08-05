@@ -133,8 +133,8 @@ namespace BulkyBook.web.Areas.Customer.Controllers
         public IActionResult OrderConfirmation(string orderId)
         {
             if (string.IsNullOrEmpty(orderId))
-               return NotFound();
-            
+                return NotFound();
+
 
             return View(nameof(OrderConfirmation), orderId);
         }

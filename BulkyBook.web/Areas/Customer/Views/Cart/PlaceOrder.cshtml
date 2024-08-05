@@ -1,81 +1,55 @@
 ﻿@model OrderVM
 
 <form method="post">
-    @* <div class="container mb-4"> *@
-        <div class="card shadow border-0">
-            <div class="card-header bg-secondary bg-gradient text-light ml-0 py-4">
-                <div class="row px-4">
-                    <div class="col-6">
-                        <h5 class="pt-2 text-white">Checkout</h5>
-                    </div>
-                    <div class="col-6 text-end">
-                    <a asp-action="Summary" class="btn btn-outline-danger btn-sm">Back to Summary</a>
-                    </div>
+    <div class="card shadow border-0">
+        <div class="card-header bg-secondary bg-gradient text-light ml-0 py-4">
+            <div class="row px-4">
+                <div class="col-6">
+                    <h5 class="pt-2 text-white">Checkout</h5>
                 </div>
-            </div>
-            <div class="card-body">
-                @* <div class="container rounded p-2"> *@
-                    <div class="row">
-                        <div class="col-12 col-lg-6 pb-4">
-                            <h4 class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="text-info">Shipping Details:</span>
-                            </h4>
-                            <div class="row my-1">
-                                <div class="col-3">
-                                    <label for="FullName">Full Name</label>
-                                </div>
-                                <div class="col-9">
-                                    <input asp-for="OrderAddress.FullName" class="form-control" placeholder="Enter full name" />
-                                    <span asp-validation-for="OrderAddress.FullName" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="row my-1">
-                                <div class="col-3">
-                                    <label for="Street">Street Address</label>
-                                </div>
-                                <div class="col-9">
-                                    <input asp-for="OrderAddress.Street" class="form-control" placeholder="Enter street address" />
-                                    <span asp-validation-for="OrderAddress.Street" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="row my-1">
-                                <div class="col-3">
-                                    <label for="City">City</label>
-                                </div>
-                                <div class="col-9">
-                                    <input asp-for="OrderAddress.City" class="form-control" placeholder="Enter city" />
-                                    <span asp-validation-for="OrderAddress.City" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="row my-1">
-                                <div class="col-3">
-                                    <label for="State">State</label>
-                                </div>
-                                <div class="col-9">
-                                    <input asp-for="OrderAddress.State" class="form-control" placeholder="Enter state" />
-                                    <span asp-validation-for="OrderAddress.State" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="row my-1">
-                                <div class="col-3">
-                                    <label for="PhoneNumber">Phone</label>
-                                </div>
-                                <div class="col-9">
-                                    <input asp-for="OrderAddress.PhoneNumber" class="form-control" placeholder="Enter phone number" />
-                                    <span asp-validation-for="OrderAddress.PhoneNumber" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @* </div> *@
-            </div>
-            <div class="card-footer">
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">Place Order</button>
+                <div class="col-6 text-end">
+                    <a asp-action="Summary" class="btn btn-outline-danger btn-sm">Back to Summary</a>
                 </div>
             </div>
         </div>
-    @* </div> *@
+        <div class="card-body">
+            <div class="col-12 col-lg-6 pb-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-info">Shipping Details:</span>
+                </h4>
+                <div class="form-floating mb-3">
+                    <input asp-for="OrderAddress.FullName" class="form-control" autocomplete="on" aria-required="true" placeholder="full name" />
+                    <label asp-for="OrderAddress.FullName" class="form-label">Full Name</label>
+                    <span asp-validation-for="OrderAddress.FullName" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="OrderAddress.Street" class="form-control" autocomplete="on" aria-required="true" placeholder="street" />
+                    <label asp-for="OrderAddress.Street" class="form-label">Street</label>
+                    <span asp-validation-for="OrderAddress.Street" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="OrderAddress.City" class="form-control" autocomplete="on" aria-required="true" placeholder="city" />
+                    <label asp-for="OrderAddress.City" class="form-label">City</label>
+                    <span asp-validation-for="OrderAddress.City" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="OrderAddress.State" class="form-control" autocomplete="on" aria-required="true" placeholder="state" />
+                    <label asp-for="OrderAddress.State" class="form-label">State</label>
+                    <span asp-validation-for="OrderAddress.State" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="OrderAddress.PhoneNumber" class="form-control" autocomplete="on" aria-required="true" placeholder="phone number" />
+                    <label asp-for="OrderAddress.PhoneNumber" class="form-label">Phone Number</label>
+                    <span asp-validation-for="OrderAddress.PhoneNumber" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary border-0 bg-gradient w-100 py-2">Place Order</button>
+            </div>
+        </div>
+    </div>
 </form>
 
 @section Scripts {

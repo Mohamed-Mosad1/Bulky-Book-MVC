@@ -25,16 +25,17 @@
                     {
                         <li class="list-group-item d-flex justify-content-between">
                             <div>
-                                <h6 class="my-0">@item.ProductTitle</h6>
-                                <small class="text-muted">Quantity: @item.Quantity</small>
+                                <h5 class="fw-bold">@item.ProductTitle</h5>
+                                <p><small>@Html.Raw(item.ProductDescription?.Split(' ').Take(10).Aggregate((s1, s2) => s1 + " " + s2))</small></p>
+                                <h6 class="fw-bold">Quantity: @item.Quantity</h6>
                             </div>
-                            <span class="text-muted">@((item.ProductPrice * item.Quantity).ToString("c")) </span>
+                            <span class="text-muted">@((item.ProductPrice * item.Quantity).ToString("c"))</span>
                         </li>
                     }
 
                     <li class="list-group-item d-flex justify-content-between bg-light">
-                        <small class="text-info">Total (USD)</small>
-                        <strong class="text-info">@Model.TotalPrice.ToString("c")</strong>
+                        <h5 class="text-info fw-bolder">Total (USD)</h5>
+                        <strong class="text-info fw-bolder">@Model.TotalPrice.ToString("c")</strong>
                     </li>
                 </ul>
             </div>
@@ -49,7 +50,7 @@
                 </p>
             </div>
             <div class="col-12 col-md-4">
-                <a asp-action="PlaceOrder" value="Checkout" class="btn btn-primary form-control">Checkout</a>
+                <a asp-action="PlaceOrder" value="Checkout" class="btn btn-primary border-0 bg-gradient w-100 py-2">Checkout</a>
             </div>
         </div>
     </div>

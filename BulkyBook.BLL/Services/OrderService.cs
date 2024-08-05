@@ -55,12 +55,13 @@ namespace BulkyBook.BLL.Services
             //    _unitOfWork.Repository<Order>().Delete(existOrder);
             //}
 
-            var order = new Order(userId, orderStatus, orderAddress, orderItems, orderTotal, cart.PaymentIntentId, paymentStatus);
+            var order = new Order(userId, orderStatus, orderAddress, orderItems, orderTotal, sessionId: null, paymentIntentId: cart.PaymentIntentId, paymentStatus: paymentStatus);
 
             _unitOfWork.Repository<Order>().Add(order);
 
             var result = await _unitOfWork.CompleteAsync();
-            if (result <= 0) return null;
+            if (result <= 0) 
+                return null;
 
             return order;
         }

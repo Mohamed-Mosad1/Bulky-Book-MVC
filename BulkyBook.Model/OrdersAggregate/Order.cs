@@ -8,14 +8,19 @@ namespace BulkyBook.Model.OrdersAggregate
     {
         public Order() { }
 
-        public Order(string appUserId, OrderStatus orderStatus, OrderAddress orderAddress, ICollection<OrderItem> orderItems, decimal orderTotal, string paymentInstantId, PaymentStatus paymentStatus)
+        public Order(
+            string appUserId, OrderStatus orderStatus, OrderAddress orderAddress,
+            ICollection<OrderItem> orderItems, decimal orderTotal,
+            string? sessionId, string? paymentIntentId, PaymentStatus? paymentStatus
+            )
         {
             AppUserId = appUserId;
             OrderStatus = orderStatus;
             OrderAddress = orderAddress;
             OrderItems = orderItems;
             OrderTotal = orderTotal;
-            PaymentInstantId = paymentInstantId;
+            SessionId = sessionId;
+            PaymentIntentId = paymentIntentId;
             PaymentStatus = paymentStatus;
         }
 
@@ -31,8 +36,9 @@ namespace BulkyBook.Model.OrdersAggregate
         public ICollection<OrderItem> OrderItems { get; set; } = new HashSet<OrderItem>();
         public decimal OrderTotal { get; set; }
 
-        public string? PaymentInstantId { get; set; }
-        public PaymentStatus PaymentStatus { get; set; }
+        public string? SessionId { get; set; }
+        public string? PaymentIntentId { get; set; }
+        public PaymentStatus? PaymentStatus { get; set; }
         public string? TrackingNumber { get; set; }
         public string? Carrier { get; set; }
         public DateTimeOffset? PaymentDate { get; set; }

@@ -33,6 +33,8 @@ namespace BulkyBook.web
             }).AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+            //builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = $"/Identity/Account/Login";
@@ -46,6 +48,7 @@ namespace BulkyBook.web
             builder.Services.AddScoped(typeof(IProductService), typeof(ProductService));
             builder.Services.AddScoped(typeof(IShoppingCartService), typeof(ShoppingCartService));
             builder.Services.AddScoped(typeof(IOrderService), typeof(OrderService));
+            builder.Services.AddScoped(typeof(IPaymentService), typeof(PaymentService));
 
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
@@ -90,6 +93,8 @@ namespace BulkyBook.web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            //Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetConnectionString("Stripe:SecretKey");
 
             app.UseRouting();
 
