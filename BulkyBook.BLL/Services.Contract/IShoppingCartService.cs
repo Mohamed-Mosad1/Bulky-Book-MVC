@@ -5,8 +5,7 @@ namespace BulkyBook.DAL.InterFaces
     public interface IShoppingCartService
     {
         Task AddOrUpdateToCartAsync(string userId, int productId, int quantity);
-        Task<ShoppingCart> GetOrCreateCartAsync(string userId);
-        Task<ShoppingCart?> GetShoppingCartAsync(string userId);
+        Task<ShoppingCart?> GetCartAsync(string userId, bool includeInputs = false, bool includeImages = false);
         Task<ShoppingCartItem?> GetCartItemByIdAsync(string cartItemId);
         Task RemoveCartAsync(string cartId);
         Task RemoveCartItemAsync(string cartItemId);

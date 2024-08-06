@@ -8,7 +8,7 @@ namespace BulkyBook.BLL.Services.Contract
     {
         Task<Order?> CreateOrderAsync(string userId, string cartId, OrderAddress orderAddress);
         Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string userId);
-        Task<Order> GetOrderByIdAsync(string orderId, string userId);
+        Task<Order?> GetOrderByIdAsync(string orderId);
 
     }
 }

@@ -1,16 +1,45 @@
-﻿using BulkyBook.Model.Cart;
+﻿using BulkyBook.Model;
+using BulkyBook.Model.Cart;
 
 namespace BulkyBook.DAL.Specifications.ShoppingCarts
 {
     public class ShoppingCartWithCartItemSpec : BaseSpecifications<ShoppingCart>
     {
-        public ShoppingCartWithCartItemSpec(string userId)
+        public ShoppingCartWithCartItemSpec(string userId, bool includeCartItem = false, bool includeImages = false)
         : base(x => x.AppUserId == userId)
         {
-            AddInclude(x => x.AppUser);
-            AddInclude(x => x.CartItems);
-            AddInclude("CartItems.Product");
-            AddInclude("CartItems.Product.ProductImages");
+            ApplyNoTracking();
+
+            if (includeCartItem)
+            {
+                AddSelect(x => new ShoppingCart()
+                {
+                    AppUser = new Model.Identity.AppUser()
+                    {
+                        Id = x.AppUser.Id,
+                        UserName = x.AppUser.UserName
+                    },
+                    CartItems = includeCartItem ? x.CartItems.Select(ci => new ShoppingCartItem()
+                    {
+                        Id = ci.Id,
+                        ProductId = ci.ProductId,
+                        Quantity = ci.Quantity,
+                        Product = new Product()
+                        {
+                            Id = ci.Product.Id,
+                            Title = ci.Product.Title,
+                            Price = ci.Product.Price,
+                            Description = ci.Product.Description,
+                            ProductImages = includeImages
+                            ? ci.Product.ProductImages.Select(pi => new ProductImage()
+                            {
+                                ImageUrl = pi.ImageUrl
+                            }).ToList() : new List<ProductImage>()
+                        }
+                    }).ToList() : new List<ShoppingCartItem>()
+                });
+            }
+
         }
     }
 }

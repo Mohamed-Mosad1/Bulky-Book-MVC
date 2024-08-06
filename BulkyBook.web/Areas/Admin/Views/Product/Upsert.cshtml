@@ -60,6 +60,7 @@
                     <span asp-validation-for="Price100" class="text-danger my-3"></span>
                 </div>
                 <div class="form-floating my-3">
+                    <input asp-for="CategoryName" hidden class="form-control border-0 shadow" />
                     <select asp-for="CategoryId" asp-items="@categories" class="form-select border-0 shadow">
                         <option value="">-- Select Category --</option>
                     </select>

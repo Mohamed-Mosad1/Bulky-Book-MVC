@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BulkyBook.Model.ViewModels
+namespace BulkyBook.Model.ViewModels.OrderVM
 {
     public class OrderAddressVM
     {

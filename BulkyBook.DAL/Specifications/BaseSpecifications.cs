@@ -14,11 +14,9 @@ namespace BulkyBook.DAL.Specifications
 
         public Expression<Func<T, object>> OrderByDescending { get; set; } = null!;
 
-        public int Take { get; set; }
+        public Expression<Func<T, T>> Select { get; set; } = null!;
 
-        public int Skip { get; set; }
-
-        public bool IsPagingEnabled { get; set; } = false;
+        public bool AsNoTracking { get; set; }
 
         public BaseSpecifications() { }
 
@@ -47,12 +45,16 @@ namespace BulkyBook.DAL.Specifications
             OrderByDescending = OrderByDescExpression;
         }
 
-        public void ApplyPagination(int skip, int take)
+        public void ApplyNoTracking()
         {
-            IsPagingEnabled = true;
-            Skip = skip;
-            Take = take;
+            AsNoTracking = true;
         }
+
+        public void AddSelect(Expression<Func<T, T>> selectExpression)
+        {
+            Select = selectExpression;
+        }
+
 
     }
 }

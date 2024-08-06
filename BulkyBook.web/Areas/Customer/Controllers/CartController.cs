@@ -4,6 +4,7 @@ using BulkyBook.DAL.InterFaces;
 using BulkyBook.Model.Identity;
 using BulkyBook.Model.OrdersAggregate;
 using BulkyBook.Model.ViewModels;
+using BulkyBook.Model.ViewModels.OrderVM;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -38,18 +39,21 @@ namespace BulkyBook.web.Areas.Customer.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId is not null)
             {
-                var cart = await _shoppingCartService.GetOrCreateCartAsync(userId);
-                decimal totalPrice = cart.CartItems
+                var cart = await _shoppingCartService.GetCartAsync(userId, true, true);
+                if (cart is not null)
+                {
+                    decimal totalPrice = cart.CartItems
                             .Sum(item => _shoppingCartService.GetPriceBasedOnQuantity(item) * item.Quantity);
 
-                cart.TotalPrice = totalPrice;
+                    cart.TotalPrice = totalPrice;
 
-                var cartVM = _mapper.Map<ShoppingCartVM>(cart);
+                    var cartVM = _mapper.Map<ShoppingCartVM>(cart);
 
-                return View(cartVM);
+                    return View(cartVM);
+                }
             }
 
-            return NotFound();
+            return View(new ShoppingCartVM());
         }
 
         public async Task<IActionResult> Plus(string cartId)
@@ -84,15 +88,19 @@ namespace BulkyBook.web.Areas.Customer.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId is not null)
             {
-                var cart = await _shoppingCartService.GetOrCreateCartAsync(userId);
-                decimal totalPrice = cart.CartItems
+                var cart = await _shoppingCartService.GetCartAsync(userId, true, false);
+
+                if (cart is not null)
+                {
+                    decimal totalPrice = cart.CartItems
                             .Sum(item => _shoppingCartService.GetPriceBasedOnQuantity(item) * item.Quantity);
 
-                cart.TotalPrice = totalPrice;
+                    cart.TotalPrice = totalPrice;
 
-                var cartVM = _mapper.Map<ShoppingCartVM>(cart);
+                    var cartVM = _mapper.Map<ShoppingCartVM>(cart);
 
-                return View(cartVM);
+                    return View(cartVM);
+                }
             }
 
             return NotFound();
@@ -112,16 +120,16 @@ namespace BulkyBook.web.Areas.Customer.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId is not null)
             {
-                var cartId = _shoppingCartService.GetShoppingCartAsync(userId).Result?.Id;
-                if (cartId is not null)
+                var cart = await _shoppingCartService.GetCartAsync(userId);
+                if (cart is not null)
                 {
                     var orderAddress = new OrderAddress(orderVM.OrderAddress.FullName, orderVM.OrderAddress.City, orderVM.OrderAddress.Street, orderVM.OrderAddress.State, orderVM.OrderAddress.PhoneNumber);
 
-                    var orderCreated = await _orderService.CreateOrderAsync(userId, cartId, orderAddress);
+                    var orderCreated = await _orderService.CreateOrderAsync(userId, cart.Id, orderAddress);
                     if (orderCreated is not null)
                     {
                         TempData["success"] = "Order created successfully";
-                        await _shoppingCartService.RemoveCartAsync(cartId);
+                        await _shoppingCartService.RemoveCartAsync(cart.Id);
                         return RedirectToAction(nameof(OrderConfirmation), new { orderId = orderCreated.Id });
                     }
                 }

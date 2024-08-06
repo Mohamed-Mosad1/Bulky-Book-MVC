@@ -32,7 +32,7 @@ namespace BulkyBook.BLL.Services
             // Get Secret key
             StripeConfiguration.ApiKey = _configuration["Stripe:Secretkey"];
             // Get Basket
-            var cart = await _shoppingCartService.GetOrCreateCartAsync(cartId);
+            var cart = await _shoppingCartService.GetCartAsync(cartId);
             if (cart is null) return null;
 
             if (cart.CartItems.Count > 0)

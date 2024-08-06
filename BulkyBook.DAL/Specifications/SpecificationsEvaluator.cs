@@ -12,6 +12,11 @@ namespace BulkyBook.DAL.Specifications
                 query = query.Where(spec.Criteria);
             }
 
+            if (spec.AsNoTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
             if (spec.OrderBy is not null)
             {
                 query = query.OrderBy(spec.OrderBy);
@@ -22,15 +27,14 @@ namespace BulkyBook.DAL.Specifications
                 query = query.OrderByDescending(spec.OrderByDescending);
             }
 
-            if (spec.IsPagingEnabled)
-            {
-                query = query.Skip(spec.Skip).Take(spec.Take);
-            }
-
             query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
 
-            // Apply Includes from string paths
             query = spec.IncludeStrings.Aggregate(query, (current, include) => current.Include(include));
+
+            if (spec.Select is not null)
+            {
+                query = query.Select(spec.Select);
+            }
 
             return query;
         }

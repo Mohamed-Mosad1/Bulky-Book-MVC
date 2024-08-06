@@ -1,5 +1,6 @@
 ﻿// Ignore Spelling: BLL
 
+using BulkyBook.DAL.Data;
 using BulkyBook.DAL.InterFaces;
 using BulkyBook.DAL.Specifications.ShoppingCarts;
 using BulkyBook.Model.Cart;
@@ -8,16 +9,29 @@ namespace BulkyBook.BLL.Services
 {
     public class ShoppingCartService : IShoppingCartService
     {
+        private readonly ApplicationDbContext _dbContext;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ShoppingCartService(IUnitOfWork unitOfWork)
+        public ShoppingCartService(ApplicationDbContext dbContext, IUnitOfWork unitOfWork)
         {
+            _dbContext = dbContext;
             _unitOfWork = unitOfWork;
         }
 
         public async Task AddOrUpdateToCartAsync(string userId, int productId, int quantity)
         {
-            var shoppingCart = await GetOrCreateCartAsync(userId);
+            var shoppingCart = await GetCartAsync(userId);
+            if (shoppingCart is null)
+            {
+                shoppingCart = new ShoppingCart()
+                {
+                    AppUserId = userId
+                };
+
+                _unitOfWork.Repository<ShoppingCart>().Add(shoppingCart);
+                //await _unitOfWork.CompleteAsync();
+            }
+
             var cartItem = shoppingCart.CartItems.FirstOrDefault(c => c.ProductId == productId);
 
             if (cartItem is not null)
@@ -38,30 +52,23 @@ namespace BulkyBook.BLL.Services
             await _unitOfWork.CompleteAsync();
         }
 
-        public async Task<ShoppingCart> GetOrCreateCartAsync(string userId)
+        public async Task<ShoppingCart?> GetCartAsync(string userId, bool includeInputs = false, bool includeImages = false)
         {
-            var spec = new ShoppingCartWithCartItemSpec(userId);
+            var spec = new ShoppingCartWithCartItemSpec(userId, includeInputs, includeImages);
             var shoppingCart = await _unitOfWork.Repository<ShoppingCart>().GetWithSpecAsync(spec);
 
-            if (shoppingCart is null)
-            {
-                shoppingCart = new ShoppingCart()
-                {
-                    AppUserId = userId
-                };
+            //if (shoppingCart is null)
+            //{
+            //    shoppingCart = new ShoppingCart()
+            //    {
+            //        AppUserId = userId
+            //    };
 
-                _unitOfWork.Repository<ShoppingCart>().Add(shoppingCart);
-                await _unitOfWork.CompleteAsync();
-            }
+            //    _unitOfWork.Repository<ShoppingCart>().Add(shoppingCart);
+            //    await _unitOfWork.CompleteAsync();
+            //}
 
             return shoppingCart;
-        }
-
-
-        public async Task<ShoppingCart?> GetShoppingCartAsync(string userId)
-        {
-            var spec = new ShoppingCartWithSpec(userId);
-            return await _unitOfWork.Repository<ShoppingCart>().GetWithSpecAsync(spec);
         }
 
         public async Task<ShoppingCartItem?> GetCartItemByIdAsync(string cartItemId)

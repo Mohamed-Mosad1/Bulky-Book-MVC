@@ -2,6 +2,7 @@
 
 using BulkyBook.BLL.Services.Contract;
 using BulkyBook.DAL.InterFaces;
+using BulkyBook.DAL.Specifications.OrderSpecs;
 using BulkyBook.Model;
 using BulkyBook.Model.OrdersAggregate;
 
@@ -20,7 +21,7 @@ namespace BulkyBook.BLL.Services
 
         public async Task<Order?> CreateOrderAsync(string userId, string cartId, OrderAddress orderAddress)
         {
-            var cart = await _shoppingCartService.GetOrCreateCartAsync(userId);
+            var cart = await _shoppingCartService.GetCartAsync(userId);
             if (cart is null) return null;
 
             var orderItems = new List<OrderItem>();
@@ -60,20 +61,23 @@ namespace BulkyBook.BLL.Services
             _unitOfWork.Repository<Order>().Add(order);
 
             var result = await _unitOfWork.CompleteAsync();
-            if (result <= 0) 
+            if (result <= 0)
                 return null;
 
             return order;
         }
 
-        public Task<Order> GetOrderByIdAsync(string orderId, string userId)
+        public async Task<Order?> GetOrderByIdAsync(string orderId)
         {
-            throw new NotImplementedException();
+            var spec = new OrdersWithOrderItemsSpec(orderId);
+            return await _unitOfWork.Repository<Order>().GetWithSpecAsync(spec);
         }
 
-        public Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string userId)
+        public async Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string userId)
         {
-            throw new NotImplementedException();
+            var spec = new OrdersWithOrderItemsSpec(userId);
+            var orders = await _unitOfWork.Repository<Order>().GetAllWithSpecAsync(spec);
+            return orders;
         }
     }
 }
