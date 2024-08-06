@@ -38,7 +38,6 @@ namespace BulkyBook.web.Areas.Admin.Controllers
         {
             if (!id.HasValue || id == 0)
             {
-                ViewData["ActionName"] = "Create";
                 return View();
             }
             else
@@ -49,7 +48,6 @@ namespace BulkyBook.web.Areas.Admin.Controllers
                     return NotFound();
 
                 var mappedProduct = _mapper.Map<ProductVM>(productWithCategoryAndImages);
-                ViewData["ActionName"] = "Update";
 
                 return View(mappedProduct);
             }

@@ -12,6 +12,7 @@ namespace BulkyBook.Utility
         public MappingProfiles()
         {
             CreateMap<Product, ProductVM>().ReverseMap();
+
             CreateMap<ProductImage, ProductImageVM>().ReverseMap();
 
             CreateMap<ShoppingCart, ShoppingCartVM>()

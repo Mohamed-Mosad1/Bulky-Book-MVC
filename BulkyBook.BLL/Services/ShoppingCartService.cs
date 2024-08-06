@@ -1,6 +1,5 @@
 ﻿// Ignore Spelling: BLL
 
-using BulkyBook.DAL.Data;
 using BulkyBook.DAL.InterFaces;
 using BulkyBook.DAL.Specifications.ShoppingCarts;
 using BulkyBook.Model.Cart;
@@ -9,12 +8,10 @@ namespace BulkyBook.BLL.Services
 {
     public class ShoppingCartService : IShoppingCartService
     {
-        private readonly ApplicationDbContext _dbContext;
         private readonly IUnitOfWork _unitOfWork;
 
-        public ShoppingCartService(ApplicationDbContext dbContext, IUnitOfWork unitOfWork)
+        public ShoppingCartService(IUnitOfWork unitOfWork)
         {
-            _dbContext = dbContext;
             _unitOfWork = unitOfWork;
         }
 
@@ -29,7 +26,6 @@ namespace BulkyBook.BLL.Services
                 };
 
                 _unitOfWork.Repository<ShoppingCart>().Add(shoppingCart);
-                //await _unitOfWork.CompleteAsync();
             }
 
             var cartItem = shoppingCart.CartItems.FirstOrDefault(c => c.ProductId == productId);
@@ -55,18 +51,8 @@ namespace BulkyBook.BLL.Services
         public async Task<ShoppingCart?> GetCartAsync(string userId, bool includeInputs = false, bool includeImages = false)
         {
             var spec = new ShoppingCartWithCartItemSpec(userId, includeInputs, includeImages);
+            
             var shoppingCart = await _unitOfWork.Repository<ShoppingCart>().GetWithSpecAsync(spec);
-
-            //if (shoppingCart is null)
-            //{
-            //    shoppingCart = new ShoppingCart()
-            //    {
-            //        AppUserId = userId
-            //    };
-
-            //    _unitOfWork.Repository<ShoppingCart>().Add(shoppingCart);
-            //    await _unitOfWork.CompleteAsync();
-            //}
 
             return shoppingCart;
         }

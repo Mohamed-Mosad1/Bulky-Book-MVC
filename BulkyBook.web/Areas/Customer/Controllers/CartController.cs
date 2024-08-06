@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using BulkyBook.BLL.Services.Contract;
 using BulkyBook.DAL.InterFaces;
-using BulkyBook.Model.Identity;
 using BulkyBook.Model.OrdersAggregate;
 using BulkyBook.Model.ViewModels;
 using BulkyBook.Model.ViewModels.OrderVM;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -18,19 +16,16 @@ namespace BulkyBook.web.Areas.Customer.Controllers
     {
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IOrderService _orderService;
-        private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
 
         public CartController(
             IShoppingCartService shoppingCartService,
             IOrderService orderService,
-            UserManager<AppUser> userManager,
             IMapper mapper
             )
         {
             _shoppingCartService = shoppingCartService;
             _orderService = orderService;
-            _userManager = userManager;
             _mapper = mapper;
         }
 

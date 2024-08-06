@@ -29,7 +29,7 @@ function loadDataTable() {
             { data: 'isbn', "autoWidth": true },
             { data: 'listPrice', "autoWidth": true },
             { data: 'author', "autoWidth": true },
-            { data: 'categoryName', "autoWidth": true },
+            { data: 'category.name', "autoWidth": true },
             {
                 data: 'id',
                 "render": function (data) {

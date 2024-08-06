@@ -24,9 +24,7 @@ namespace BulkyBook.Model.ViewModels
         public decimal Price100 { get; set; }
 
         public int CategoryId { get; set; }
-
-        [DisplayName("Category")]
-        public string CategoryName { get; set; } = null!;
+        public Category? Category { get; set; } 
 
         [DisplayName("Product Image")]
         public List<ProductImageVM>? ProductImages { get; set; }
