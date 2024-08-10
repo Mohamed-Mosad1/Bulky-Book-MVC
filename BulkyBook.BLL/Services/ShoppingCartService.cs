@@ -39,19 +39,20 @@ namespace BulkyBook.BLL.Services
                 var newCartItem = new ShoppingCartItem
                 {
                     ProductId = productId,
-                    Quantity = quantity
+                    Quantity = quantity,
+                    ShoppingCartId = shoppingCart.Id
                 };
 
-                shoppingCart.CartItems.Add(newCartItem);
+                _unitOfWork.Repository<ShoppingCartItem>().Add(newCartItem);
             }
 
             await _unitOfWork.CompleteAsync();
         }
 
-        public async Task<ShoppingCart?> GetCartAsync(string userId, bool includeInputs = false, bool includeImages = false)
+        public async Task<ShoppingCart?> GetCartAsync(string userId, bool includeCartItem = false, bool includeImages = false)
         {
-            var spec = new ShoppingCartWithCartItemSpec(userId, includeInputs, includeImages);
-            
+            var spec = new ShoppingCartWithCartItemSpec(userId, includeCartItem, includeImages);
+
             var shoppingCart = await _unitOfWork.Repository<ShoppingCart>().GetWithSpecAsync(spec);
 
             return shoppingCart;
@@ -65,7 +66,6 @@ namespace BulkyBook.BLL.Services
         public async Task RemoveCartItemAsync(string cartItemId)
         {
             var shoppingCartItem = await _unitOfWork.Repository<ShoppingCartItem>().GetByIdAsync(cartItemId);
-
 
             if (shoppingCartItem is not null)
             {
@@ -95,7 +95,6 @@ namespace BulkyBook.BLL.Services
                 <= 100 => shoppingCartItem.Product.Price50,
                 _ => shoppingCartItem.Product.Price100
             };
-
         }
 
         public async Task IncrementCartItemAsync(string cartItemId)

@@ -1,5 +1,6 @@
 ﻿using BulkyBook.Model;
 using BulkyBook.Model.Cart;
+using BulkyBook.Model.Identity;
 
 namespace BulkyBook.DAL.Specifications.ShoppingCarts
 {
@@ -14,10 +15,11 @@ namespace BulkyBook.DAL.Specifications.ShoppingCarts
             {
                 AddSelect(x => new ShoppingCart()
                 {
-                    AppUser = new Model.Identity.AppUser()
+                    AppUser = new AppUser()
                     {
                         Id = x.AppUser.Id,
-                        UserName = x.AppUser.UserName
+                        UserName = x.AppUser.UserName,
+                        CompanyId = x.AppUser.CompanyId,
                     },
                     CartItems = includeCartItem ? x.CartItems.Select(ci => new ShoppingCartItem()
                     {
@@ -30,8 +32,7 @@ namespace BulkyBook.DAL.Specifications.ShoppingCarts
                             Title = ci.Product.Title,
                             Price = ci.Product.Price,
                             Description = ci.Product.Description,
-                            ProductImages = includeImages
-                            ? ci.Product.ProductImages.Select(pi => new ProductImage()
+                            ProductImages = includeImages ? ci.Product.ProductImages.Select(pi => new ProductImage()
                             {
                                 ImageUrl = pi.ImageUrl
                             }).ToList() : new List<ProductImage>()

@@ -55,7 +55,7 @@ namespace BulkyBook.web.Areas.Customer.Controllers
             //if (productId != 0)
             //    shoppingCartItem.ProductId = productId;
 
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userId is not null)
             {

@@ -2,11 +2,11 @@
 
 using BulkyBook.BLL.Services.Contract;
 using BulkyBook.DAL.InterFaces;
-using BulkyBook.DAL.Specifications.OrderSpecs;
 using BulkyBook.Model.Cart;
 using BulkyBook.Model.OrdersAggregate;
 using Microsoft.Extensions.Configuration;
 using Stripe;
+using Stripe.Checkout;
 
 namespace BulkyBook.BLL.Services
 {
@@ -27,83 +27,86 @@ namespace BulkyBook.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<ShoppingCart?> CreateOrUpdatePaymentIntent(string cartId)
+        public async Task<Session?> CreateSessionPaymentAsync(ShoppingCart shoppingCart, Order order)
         {
             // Get Secret key
             StripeConfiguration.ApiKey = _configuration["Stripe:Secretkey"];
-            // Get Basket
-            var cart = await _shoppingCartService.GetCartAsync(cartId);
-            if (cart is null) return null;
 
-            if (cart.CartItems.Count > 0)
+            if (shoppingCart is null)
+                return null;
+
+            var domain = _configuration["BaseUrl"];
+            var options = new SessionCreateOptions
             {
-                foreach (var item in cart.CartItems)
+                SuccessUrl = domain + $"customer/cart/OrderConfirmation?orderId={order.Id}",
+                CancelUrl = domain + "customer/cart/index",
+                LineItems = new List<SessionLineItemOptions>(),
+                Mode = "payment",
+            };
+
+            if (shoppingCart.CartItems.Count > 0)
+            {
+                foreach (var item in shoppingCart.CartItems)
                 {
-                    var product = cart.CartItems.FirstOrDefault(x => x.ProductId == item.ProductId)?.Product;
-                    if (product is not null)
+                    var sessionLineItem = new SessionLineItemOptions
                     {
-                        if (item.Product.Price != product.Price)
+                        PriceData = new SessionLineItemPriceDataOptions()
                         {
-                            item.Product.Price = product.Price;
-                        }
-                    }
+                            UnitAmount = (long)(item.Product.Price * 100), // $20.50 => 2050
+                            Currency = "usd",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions()
+                            {
+                                Name = item.Product.Title
+                            }
+                        },
+                        Quantity = item.Quantity
+                    };
+                    options.LineItems.Add(sessionLineItem);
                 }
+
+                await _unitOfWork.CompleteAsync();
             }
 
-            var orderTotal = cart.CartItems.Sum(item => _shoppingCartService.GetPriceBasedOnQuantity(item) * item.Quantity);
+            var sessionService = new SessionService();
+            var session = await sessionService.CreateAsync(options);
 
-            // Create Payment Intent
-            var service = new PaymentIntentService();
-            PaymentIntent paymentIntent;
+            UpdatePaymentIntentIdAndSessionIdAsync(order, session.Id, session.PaymentIntentId);
 
-            if (string.IsNullOrEmpty(cart.PaymentIntentId)) // Create
-            {
-                var options = new PaymentIntentCreateOptions()
-                {
-                    Amount = (long)(orderTotal * 100),
-                    Currency = "usd",
-                    PaymentMethodTypes = new List<string> { "card" }
-                };
+            shoppingCart.LastSessionId = session.Id;
+            //_unitOfWork.Repository<ShoppingCart>().Update(shoppingCart);
 
-                paymentIntent = await service.CreateAsync(options);
-                cart.PaymentIntentId = paymentIntent.Id;
-                cart.ClientSecret = paymentIntent.ClientSecret;
-            }
-            else
-            {
-                var options = new PaymentIntentUpdateOptions()
-                {
-                    Amount = (long)(orderTotal * 100)
-                };
-
-                paymentIntent = await service.UpdateAsync(cart.PaymentIntentId, options);
-                cart.PaymentIntentId = paymentIntent.Id;
-                cart.ClientSecret = paymentIntent.ClientSecret;
-            }
-
-            //await _shoppingCartService.AddOrUpdateToCartAsync(cart);
-
-            return cart;
-        }
-
-        public async Task<Order> UpdatePaymentIntentToSucceedOrFailed(string paymentIntentId, bool flag)
-        {
-            var spec = new OrderWithPaymentIntentSpec(paymentIntentId);
-
-            var order = await _unitOfWork.Repository<Order>().GetWithSpecAsync(spec);
-            if (flag)
-            {
-                order.PaymentStatus = PaymentStatus.Approved;
-            }
-            else
-            {
-                order.PaymentStatus = ~PaymentStatus.Rejected;
-            }
-
-            _unitOfWork.Repository<Order>().Update(order);
             await _unitOfWork.CompleteAsync();
 
-            return order;
+            return session;
+        }
+
+
+        public void UpdatePaymentIntentIdAndSessionIdAsync(Order order, string sessionId, string? paymentIntentId)
+        {
+            if (order is null)
+                return;
+
+            if (!string.IsNullOrEmpty(sessionId))
+                order.SessionId = sessionId;
+
+            if (!string.IsNullOrEmpty(paymentIntentId))
+            {
+                order.PaymentIntentId = paymentIntentId;
+                order.PaymentDate = DateTimeOffset.UtcNow;
+            }
+        }
+
+        public async Task UpdateOrderAndPaymentStatusAsync(Order order, OrderStatus orderStatus, PaymentStatus? paymentStatus)
+        {
+            if (order is null)
+                return;
+
+            order.OrderStatus = orderStatus;
+
+            if (paymentStatus is not null)
+                order.PaymentStatus = paymentStatus;
+
+            await _unitOfWork.CompleteAsync();
         }
     }
 }

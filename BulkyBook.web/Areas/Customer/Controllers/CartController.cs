@@ -6,6 +6,7 @@ using BulkyBook.Model.ViewModels;
 using BulkyBook.Model.ViewModels.OrderVM;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe.Checkout;
 using System.Security.Claims;
 
 namespace BulkyBook.web.Areas.Customer.Controllers
@@ -16,16 +17,19 @@ namespace BulkyBook.web.Areas.Customer.Controllers
     {
         private readonly IShoppingCartService _shoppingCartService;
         private readonly IOrderService _orderService;
+        private readonly IPaymentService _paymentService;
         private readonly IMapper _mapper;
 
         public CartController(
             IShoppingCartService shoppingCartService,
             IOrderService orderService,
+            IPaymentService paymentService,
             IMapper mapper
             )
         {
             _shoppingCartService = shoppingCartService;
             _orderService = orderService;
+            _paymentService = paymentService;
             _mapper = mapper;
         }
 
@@ -113,31 +117,58 @@ namespace BulkyBook.web.Areas.Customer.Controllers
                 return View(orderVM);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var orderCreated = new Order();
             if (userId is not null)
             {
-                var cart = await _shoppingCartService.GetCartAsync(userId);
+                var cart = await _shoppingCartService.GetCartAsync(userId, true);
                 if (cart is not null)
                 {
                     var orderAddress = new OrderAddress(orderVM.OrderAddress.FullName, orderVM.OrderAddress.City, orderVM.OrderAddress.Street, orderVM.OrderAddress.State, orderVM.OrderAddress.PhoneNumber);
 
-                    var orderCreated = await _orderService.CreateOrderAsync(userId, cart.Id, orderAddress);
+                    orderCreated = await _orderService.CreateOrderAsync(userId, cart, orderAddress);
                     if (orderCreated is not null)
                     {
-                        TempData["success"] = "Order created successfully";
-                        await _shoppingCartService.RemoveCartAsync(cart.Id);
-                        return RedirectToAction(nameof(OrderConfirmation), new { orderId = orderCreated.Id });
+                        var session = await _paymentService.CreateSessionPaymentAsync(cart, orderCreated);
+
+                        Response.Headers.Add("Location", session.Url);
+
+                        return new StatusCodeResult(303);
                     }
                 }
             }
 
-            return BadRequest();
+            return RedirectToAction(nameof(OrderConfirmation), new { orderId = orderCreated.Id });
         }
 
-        public IActionResult OrderConfirmation(string orderId)
+        public async Task<IActionResult> OrderConfirmation(string orderId)
         {
-            if (string.IsNullOrEmpty(orderId))
+            var order = await _orderService.GetOrderByIdAsync(orderId);
+
+            if (order is null)
                 return NotFound();
 
+            if (order.PaymentStatus != PaymentStatus.ApprovedForDelayedPayment)
+            {
+                // This is an order by customer
+                var service = new SessionService();
+                Session session = service.Get(order.SessionId);
+
+                if (session.PaymentStatus.ToLower() == "paid")
+                {
+                    _paymentService.UpdatePaymentIntentIdAndSessionIdAsync(order, session.Id, session.PaymentIntentId);
+                    await _paymentService.UpdateOrderAndPaymentStatusAsync(order, OrderStatus.Approved, PaymentStatus.Approved);
+                }
+
+                //HttpContext.Session.Clear();
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var cart = await _shoppingCartService.GetCartAsync(userId);
+
+            if (cart is not null)
+                await _shoppingCartService.RemoveCartAsync(cart.Id);
+
+            TempData["success"] = "Order created successfully";
 
             return View(nameof(OrderConfirmation), orderId);
         }

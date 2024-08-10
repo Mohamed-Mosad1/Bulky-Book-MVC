@@ -4,8 +4,8 @@ namespace BulkyBook.DAL.Specifications.OrderSpecs
 {
     public class OrderWithPaymentIntentSpec : BaseSpecifications<Order>
     {
-        public OrderWithPaymentIntentSpec(string paymentIntentId)
-            : base(order => order.PaymentIntentId == paymentIntentId)
+        public OrderWithPaymentIntentSpec(string sessionId)
+            : base(order => order.SessionId == sessionId)
         {
 
         }

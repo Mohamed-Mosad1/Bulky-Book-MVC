@@ -11,7 +11,7 @@ namespace BulkyBook.Model.OrdersAggregate
         public Order(
             string appUserId, OrderStatus orderStatus, OrderAddress orderAddress,
             ICollection<OrderItem> orderItems, decimal orderTotal,
-            string? sessionId, string? paymentIntentId, PaymentStatus? paymentStatus
+            PaymentStatus? paymentStatus
             )
         {
             AppUserId = appUserId;
@@ -19,8 +19,6 @@ namespace BulkyBook.Model.OrdersAggregate
             OrderAddress = orderAddress;
             OrderItems = orderItems;
             OrderTotal = orderTotal;
-            SessionId = sessionId;
-            PaymentIntentId = paymentIntentId;
             PaymentStatus = paymentStatus;
         }
 
