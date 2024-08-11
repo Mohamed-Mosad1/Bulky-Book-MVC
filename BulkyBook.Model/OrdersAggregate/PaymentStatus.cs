@@ -10,10 +10,16 @@ namespace BulkyBook.Model.OrdersAggregate
         [EnumMember(Value = "Approved")]
         Approved,
 
-        [EnumMember(Value = "Approved For Delayed Payment")]
+        [EnumMember(Value = "ApprovedForDelayedPayment")]
         ApprovedForDelayedPayment,
 
+        [EnumMember(Value = "Refunded")]
+        Refunded,
+
         [EnumMember(Value = "Rejected")]
-        Rejected
+        Rejected,
+
+        [EnumMember(Value = "Cancelled")]
+        Cancelled
     }
 }

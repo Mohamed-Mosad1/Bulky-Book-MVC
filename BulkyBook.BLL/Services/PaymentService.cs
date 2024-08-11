@@ -2,6 +2,7 @@
 
 using BulkyBook.BLL.Services.Contract;
 using BulkyBook.DAL.InterFaces;
+using BulkyBook.DAL.Specifications.OrderSpecs;
 using BulkyBook.Model.Cart;
 using BulkyBook.Model.OrdersAggregate;
 using Microsoft.Extensions.Configuration;
@@ -64,7 +65,7 @@ namespace BulkyBook.BLL.Services
                     options.LineItems.Add(sessionLineItem);
                 }
 
-                await _unitOfWork.CompleteAsync();
+                //await _unitOfWork.CompleteAsync();
             }
 
             var sessionService = new SessionService();
@@ -72,8 +73,59 @@ namespace BulkyBook.BLL.Services
 
             UpdatePaymentIntentIdAndSessionIdAsync(order, session.Id, session.PaymentIntentId);
 
-            shoppingCart.LastSessionId = session.Id;
+            //shoppingCart.LastSessionId = session.Id;
             //_unitOfWork.Repository<ShoppingCart>().Update(shoppingCart);
+
+            await _unitOfWork.CompleteAsync();
+
+            return session;
+        }
+
+        public async Task<Session?> CreateSessionPaymentForCompanyAsync(string orderId)
+        {
+            // Get Secret key
+            StripeConfiguration.ApiKey = _configuration["Stripe:Secretkey"];
+
+            var spec = new OrdersWithOrderItemsSpec(orderId,includeOrderItems: true);
+            var order = await _unitOfWork.Repository<Order>().GetWithSpecAsync(spec);
+
+            if (order is null)
+                return null;
+
+            var domain = _configuration["BaseUrl"];
+            var options = new SessionCreateOptions
+            {
+                SuccessUrl = domain + $"admin/order/PaymentConfirmation?orderId={order.Id}",
+                CancelUrl = domain + $"admin/order/details?orderId={order.Id}",
+                LineItems = new List<SessionLineItemOptions>(),
+                Mode = "payment",
+            };
+
+            if (order.OrderItems.Count > 0)
+            {
+                foreach (var item in order.OrderItems)
+                {
+                    var sessionLineItem = new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions()
+                        {
+                            UnitAmount = (long)(item.Price * 100), // $20.50 => 2050
+                            Currency = "usd",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions()
+                            {
+                                Name = item.ProductOrdered.ProductTitle
+                            }
+                        },
+                        Quantity = item.Quantity
+                    };
+                    options.LineItems.Add(sessionLineItem);
+                }
+            }
+
+            var sessionService = new SessionService();
+            var session = await sessionService.CreateAsync(options);
+
+            UpdatePaymentIntentIdAndSessionIdAsync(order, session.Id, session.PaymentIntentId);
 
             await _unitOfWork.CompleteAsync();
 
@@ -96,15 +148,18 @@ namespace BulkyBook.BLL.Services
             }
         }
 
-        public async Task UpdateOrderAndPaymentStatusAsync(Order order, OrderStatus orderStatus, PaymentStatus? paymentStatus)
+        public async Task UpdateOrderAndPaymentStatusAsync(string orderId, OrderStatus orderStatus, PaymentStatus? paymentStatus)
         {
-            if (order is null)
-                return;
+            var orderFromDb = await _unitOfWork.Repository<Order>().GetByIdAsync(orderId);
+            if (orderFromDb is not null)
+            {
+                orderFromDb.OrderStatus = orderStatus;
 
-            order.OrderStatus = orderStatus;
+                if (paymentStatus is not null)
+                    orderFromDb.PaymentStatus = paymentStatus;
 
-            if (paymentStatus is not null)
-                order.PaymentStatus = paymentStatus;
+                _unitOfWork.Repository<Order>().Update(orderFromDb);
+            }
 
             await _unitOfWork.CompleteAsync();
         }

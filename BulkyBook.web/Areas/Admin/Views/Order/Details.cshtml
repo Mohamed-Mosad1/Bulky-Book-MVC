@@ -1,13 +1,13 @@
-﻿@using BulkyBook.Model.OrdersAggregate
-@using BulkyBook.Utility
-@model OrderToReturnVM
+﻿@model OrderToReturnVM
 
 @{
     var isAdminOrEmployee = User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee);
+    var paymentStatus = new SelectList(Enum.GetValues(typeof(PaymentStatus)).Cast<PaymentStatus>().ToList());
 }
 
 <form method="post">
-    <div class="container">
+    <input asp-for="Id" hidden />
+    <div class="container mb-4">
         <div class="card">
             <div class="card-header bg-dark text-light">
                 <div class="row justify-content-between align-items-center">
@@ -24,88 +24,124 @@
                     <div class="row">
                         <div class="col-lg-6 pb-4">
                             <h4 class="text-primary">PickUp Details:</h4>
-
-                            @foreach (var field in new[] { "FullName", "PhoneNumber", "Street", "City", "State" })
-                            {
-                                <div class="row my-1">
-                                    <div class="col-3">@field</div>
-                                    <div class="col-9">
-                                        <input asp-for="OrderAddress.@field" type="text" class="form-control" readonly="@(isAdminOrEmployee ? "" : "readonly")" />
-                                        <span asp-validation-for="OrderAddress.@field" class="text-danger"></span>
+                            <div class="row mb-3">
+                                <label for="FullName" class="col-sm-3 col-form-label">Full Name</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <input asp-for="OrderAddress.FullName" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
                                     </div>
-                                </div>
-                            }
-
-                            <div class="row my-1">
-                                <div class="col-3">Email</div>
-                                <div class="col-9">
-                                    <input asp-for="Email" readonly type="text" class="form-control" />
+                                    <span asp-validation-for="OrderAddress.FullName" class="text-danger"></span>
                                 </div>
                             </div>
 
-                            <div class="row my-1">
-                                <div class="col-3">Order Date</div>
+                            <div class="row mb-3">
+                                <label asp-for="OrderAddress.Street" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <input asp-for="OrderAddress.Street" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                    <span asp-validation-for="OrderAddress.Street" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="OrderAddress.City" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <input asp-for="OrderAddress.City" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                    <span asp-validation-for="OrderAddress.City" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="OrderAddress.State" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <input asp-for="OrderAddress.State" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                    <span asp-validation-for="OrderAddress.State" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="OrderAddress.PhoneNumber" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <input asp-for="OrderAddress.PhoneNumber" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                    <span asp-validation-for="OrderAddress.PhoneNumber" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="Email" class="col-sm-3 col-form-label"></label>
                                 <div class="col-9">
-                                    <input value="@Model.OrderDate.ToString()" readonly type="text" class="form-control" />
+                                    <input asp-for="Email" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
+                                </div>
+                                <span asp-validation-for="OrderAddress.PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="OrderDate" class="col-sm-3 col-form-label"></label>
+                                <div class="col-9">
+                                    <input asp-for="OrderDate" value="@(Model.OrderDate.ToString() ?? "Not Available")" type="text" class="form-control" readonly />
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="Carrier" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-truck"></i></span>
+                                        <input asp-for="Carrier" type="text" class="form-control" id="carrier" placeholder="Enter carrier" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label asp-for="TrackingNumber" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-truck"></i></span>
+                                        <input asp-for="TrackingNumber" type="text" class="form-control" id="trackingNumber" placeholder="Enter Tracking Number" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="ShippingDate" class="col-sm-3 col-form-label"></label>
+                                <div class="col-9">
+                                    <input asp-for="ShippingDate" value="@(Model.ShippingDate?.ToString() ?? "Not Available")" type="text" class="form-control" readonly />
                                 </div>
                             </div>
 
                             @if (isAdminOrEmployee)
                             {
-                                <div class="row my-1">
-                                    <div class="col-3">Carrier</div>
+                                <div class="row mb-3">
+                                    <label asp-for="SessionId" class="col-sm-3 col-form-label"></label>
                                     <div class="col-9">
-                                        <input asp-for="Carrier" type="text" class="form-control" />
+                                        <input asp-for="SessionId" value="@(Model.SessionId ?? "Not Available")" type="text" class="form-control" readonly />
                                     </div>
                                 </div>
 
-                                <div class="row my-1">
-                                    <div class="col-3">Tracking</div>
+                                <div class="row mb-3">
+                                    <label asp-for="PaymentIntentId" class="col-sm-3 col-form-label"></label>
                                     <div class="col-9">
-                                        <input asp-for="TrackingNumber" type="text" class="form-control" />
-                                    </div>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="row my-1">
-                                    <div class="col-3">Carrier</div>
-                                    <div class="col-9">
-                                        <input asp-for="Carrier" readonly type="text" class="form-control" />
-                                    </div>
-                                </div>
-
-                                <div class="row my-1">
-                                    <div class="col-3">Tracking</div>
-                                    <div class="col-9">
-                                        <input asp-for="TrackingNumber" readonly type="text" class="form-control" />
+                                        <input asp-for="PaymentIntentId" value="@(Model.PaymentIntentId ?? "Not Available")" type="text" class="form-control" readonly />
                                     </div>
                                 </div>
                             }
 
-                            <div class="row my-1">
-                                <div class="col-3">Shipping Date</div>
+                            <div class="row mb-3">
+                                <label asp-for="OrderStatus" class="col-sm-3 col-form-label"></label>
                                 <div class="col-9">
-                                    <input value="@Model.ShippingDate?.ToString()" readonly type="text" class="form-control" />
+                                    <input asp-for="OrderStatus" type="text" class="form-control" readonly />
                                 </div>
                             </div>
-
-                            @if (isAdminOrEmployee)
-                            {
-                                <div class="row my-1">
-                                    <div class="col-3">Session ID</div>
-                                    <div class="col-9">
-                                        <input asp-for="SessionId" readonly type="text" class="form-control" />
-                                    </div>
-                                </div>
-
-                                <div class="row my-1">
-                                    <div class="col-3">Payment Intent ID</div>
-                                    <div class="col-9">
-                                        <input asp-for="PaymentIntentId" readonly type="text" class="form-control" />
-                                    </div>
-                                </div>
-                            }
 
                             <div class="row my-1">
                                 <div class="col-3">
@@ -119,32 +155,44 @@
                                     }
                                 </div>
                                 <div class="col-9">
-                                    <input value="@Model.PaymentDueDate?.ToString()" readonly type="text" class="form-control" />
+                                    @if (Model.SessionId is null)
+                                    {
+                                        <input asp-for="PaymentDueDate" value="@(Model.PaymentDueDate?.ToString() ?? "Not Available")" readonly type="text" class="form-control" />
+                                    }
+                                    else
+                                    {
+                                        <input asp-for="PaymentDate" value="@(Model.PaymentDate?.ToString() ?? "Not Available")" readonly type="text" class="form-control" />
+                                    }
                                 </div>
                             </div>
 
-                            <div class="row my-1">
+                            <div class="row align-items-center my-3">
                                 <div class="col-3">Payment Status</div>
                                 <div class="col-9">
-                                    <input asp-for="PaymentStatus" readonly type="text" class="form-control" />
+                                    <select asp-for="PaymentStatus" asp-items="@paymentStatus" class="form-select" readonly="@(isAdminOrEmployee ? true : false)">
+                                        <option disabled value="">-- Select --</option>
+                                    </select>
                                 </div>
                             </div>
 
                             @if (isAdminOrEmployee)
                             {
-                                <button type="submit" asp-action="UpdateOrderDetail" class="btn btn-warning form-control my-1">Update Order Details</button>
+                                <button type="submit" asp-action="Details" class="btn btn-warning form-control my-1">Update Order Details</button>
                             }
                         </div>
                         <div class="col-lg-5 offset-lg-1">
                             <h4 class="text-primary">Order Summary</h4>
 
-                            <label class="btn btn-outline-primary form-control my-2">Order Status - @Model.OrderStatus</label>
-
                             <ul class="list-group mb-3">
+                                <li class="list-group-item bg-primary">
+                                    <div class="row">
+                                        <h5 class="text-white my-2 text-center">Order Status - @Model.OrderStatus</h5>
+                                    </div>
+                                </li>
                                 @foreach (var item in Model.OrderItems)
                                 {
-                                    <li class="list-group-item d-flex justify-content-between p-2">
-                                        <div class="row container">
+                                    <li class="list-group-item p-3">
+                                        <div class="row align-items-center">
                                             <div class="col-8">
                                                 <h6 class="my-0 text-primary">@item.ProductTitle</h6>
                                                 <small class="text-muted">Price: @item.Price.ToString("c")</small><br />
@@ -170,7 +218,7 @@
 
                             @if (Model.PaymentStatus == PaymentStatus.ApprovedForDelayedPayment.ToString() && Model.OrderStatus == OrderStatus.Shipped.ToString())
                             {
-                                <button type="submit" class="btn btn-success form-control my-1">Pay Now</button>
+                                <button type="submit" asp-action="CompanyPayNow" class="btn btn-success form-control my-1">Pay Now</button>
                             }
 
                             @if (isAdminOrEmployee)
@@ -186,7 +234,7 @@
                                         <button type="submit" asp-action="ShipOrder" onclick="return validateInput()" class="btn btn-primary my-1">Ship Order</button>
                                     }
 
-                                    @if (Model.OrderStatus != OrderStatus.Refunded.ToString() &&
+                                    @if (Model.OrderStatus != PaymentStatus.Refunded.ToString() &&
                                    Model.OrderStatus != OrderStatus.Cancelled.ToString() &&
                                    Model.OrderStatus != OrderStatus.Shipped.ToString())
                                     {

@@ -41,4 +41,11 @@
     <Folder Include="wwwroot\images\products\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Areas\Admin\Views\Order\PaymentConfirmation.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

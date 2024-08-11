@@ -125,8 +125,10 @@ namespace BulkyBook.web.Areas.Customer.Controllers
                 {
                     var orderAddress = new OrderAddress(orderVM.OrderAddress.FullName, orderVM.OrderAddress.City, orderVM.OrderAddress.Street, orderVM.OrderAddress.State, orderVM.OrderAddress.PhoneNumber);
 
-                    orderCreated = await _orderService.CreateOrderAsync(userId, cart, orderAddress);
-                    if (orderCreated is not null)
+                    var oo = await _orderService.CreateOrderAsync(userId, cart, orderAddress);
+                    orderCreated = await _orderService.GetOrderByIdAsync(userId, true);
+
+                    if (orderCreated is not null && orderCreated.AppUser.CompanyId is null)
                     {
                         var session = await _paymentService.CreateSessionPaymentAsync(cart, orderCreated);
 
@@ -137,7 +139,7 @@ namespace BulkyBook.web.Areas.Customer.Controllers
                 }
             }
 
-            return RedirectToAction(nameof(OrderConfirmation), new { orderId = orderCreated.Id });
+            return RedirectToAction(nameof(OrderConfirmation), new { orderId = orderCreated?.Id });
         }
 
         public async Task<IActionResult> OrderConfirmation(string orderId)
@@ -156,7 +158,7 @@ namespace BulkyBook.web.Areas.Customer.Controllers
                 if (session.PaymentStatus.ToLower() == "paid")
                 {
                     _paymentService.UpdatePaymentIntentIdAndSessionIdAsync(order, session.Id, session.PaymentIntentId);
-                    await _paymentService.UpdateOrderAndPaymentStatusAsync(order, OrderStatus.Approved, PaymentStatus.Approved);
+                    await _paymentService.UpdateOrderAndPaymentStatusAsync(order.Id, OrderStatus.Approved, PaymentStatus.Approved);
                 }
 
                 //HttpContext.Session.Clear();

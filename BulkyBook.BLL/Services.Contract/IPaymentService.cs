@@ -9,7 +9,8 @@ namespace BulkyBook.BLL.Services.Contract
     public interface IPaymentService
     {
         Task<Session?> CreateSessionPaymentAsync(ShoppingCart shoppingCart, Order order);
+        Task<Session?> CreateSessionPaymentForCompanyAsync(string orderId);
         void UpdatePaymentIntentIdAndSessionIdAsync(Order order, string sessionId, string? paymentIntentId);
-        Task UpdateOrderAndPaymentStatusAsync(Order order, OrderStatus orderStatus, PaymentStatus? paymentStatus);
+        Task UpdateOrderAndPaymentStatusAsync(string orderId, OrderStatus orderStatus, PaymentStatus? paymentStatus);
     }
 }

@@ -17,9 +17,6 @@ namespace BulkyBook.Model.OrdersAggregate
         Shipped,
 
         [EnumMember(Value = "Cancelled")]
-        Cancelled,
-
-        [EnumMember(Value = "Refunded")]
-        Refunded
+        Cancelled
     }
 }

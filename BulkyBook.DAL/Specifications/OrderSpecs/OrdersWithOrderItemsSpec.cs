@@ -6,12 +6,19 @@ namespace BulkyBook.DAL.Specifications.OrderSpecs
 {
     public class OrdersWithOrderItemsSpec : BaseSpecifications<Order>
     {
-        public OrdersWithOrderItemsSpec(string? userOrOrderId, bool includeUser = false, bool includeOrderItems = false)
-            : base(o => o.AppUserId == userOrOrderId || o.Id == userOrOrderId)
+        public OrdersWithOrderItemsSpec(string userOrOrderId, bool includeUser = false, bool includeOrderItems = false)
+            : base(o => string.IsNullOrEmpty(userOrOrderId) || o.AppUserId == userOrOrderId || o.Id == userOrOrderId)
+        {
+            ApplyIncludes(includeUser, includeOrderItems);
+            AddOrderByDesc(o => o.OrderDate);
+        }
+
+        private void ApplyIncludes(bool includeUser, bool includeOrderItems)
         {
             if (includeUser)
                 AddInclude(x => x.AppUser);
-            else if (includeOrderItems)
+
+            if (includeOrderItems)
                 AddInclude(x => x.OrderItems);
 
             if (includeUser && includeOrderItems)
@@ -19,8 +26,6 @@ namespace BulkyBook.DAL.Specifications.OrderSpecs
                 AddInclude(x => x.AppUser);
                 AddInclude(x => x.OrderItems);
             }
-            //AddOrderByDesc(o => o.OrderDate);
-
         }
     }
 }
