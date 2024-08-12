@@ -19,6 +19,7 @@ namespace BulkyBook.DAL.Specifications.ShoppingCarts
                     {
                         Id = x.AppUser.Id,
                         UserName = x.AppUser.UserName,
+                        Email = x.AppUser.Email,
                         CompanyId = x.AppUser.CompanyId,
                     },
                     CartItems = includeCartItem ? x.CartItems.Select(ci => new ShoppingCartItem()
