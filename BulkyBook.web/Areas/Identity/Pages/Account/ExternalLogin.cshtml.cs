@@ -3,6 +3,7 @@
 #nullable disable
 
 using BulkyBook.Model.Identity;
+using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -80,6 +81,11 @@ namespace BulkyBook.web.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+
+
+            public string UserName { get; set; }
+            public string City { get; set; }
+            public string Country { get; set; }
         }
 
         public IActionResult OnGet() => RedirectToPage("./Login");
@@ -127,7 +133,8 @@ namespace BulkyBook.web.Areas.Identity.Pages.Account
                 {
                     Input = new InputModel
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                        UserName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
                     };
                 }
                 return Page();
@@ -152,6 +159,10 @@ namespace BulkyBook.web.Areas.Identity.Pages.Account
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
+                user.UserName = Input.UserName;
+                user.City = Input.City;
+                user.Country = Input.Country;
+
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -159,6 +170,8 @@ namespace BulkyBook.web.Areas.Identity.Pages.Account
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+
+                        await _userManager.AddToRoleAsync(user, SD.Role_Customer);
 
                         var userId = await _userManager.GetUserIdAsync(user);
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

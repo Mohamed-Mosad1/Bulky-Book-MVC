@@ -40,6 +40,12 @@ namespace BulkyBook.web
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
             });
 
+            builder.Services.AddAuthentication().AddFacebook(options =>
+            {
+                options.AppId = "524220330034531";
+                options.AppSecret = "e7440e360a8c7a18aa5e42f07d97ceb8";
+            });
+
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
