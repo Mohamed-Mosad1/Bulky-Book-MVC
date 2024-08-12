@@ -86,7 +86,7 @@ namespace BulkyBook.BLL.Services
             // Get Secret key
             StripeConfiguration.ApiKey = _configuration["Stripe:Secretkey"];
 
-            var spec = new OrdersWithOrderItemsSpec(orderId,includeOrderItems: true);
+            var spec = new OrdersWithOrderItemsSpec(orderId, includeOrderItems: true);
             var order = await _unitOfWork.Repository<Order>().GetWithSpecAsync(spec);
 
             if (order is null)

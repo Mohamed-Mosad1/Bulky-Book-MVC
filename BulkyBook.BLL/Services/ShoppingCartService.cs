@@ -135,6 +135,17 @@ namespace BulkyBook.BLL.Services
             }
         }
 
+        public async Task<int> GetCountAsync(string userId)
+        {
+            var shoppingCart = await GetCartAsync(userId, true);
+
+            if (shoppingCart is not null)
+            {
+                return shoppingCart.CartItems.Sum(x=>x.Quantity);
+            }
+
+            return 0;
+        }
 
     }
 }

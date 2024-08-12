@@ -12,5 +12,6 @@ namespace BulkyBook.DAL.InterFaces
         decimal GetPriceBasedOnQuantity(ShoppingCartItem shoppingCartItem);
         Task IncrementCartItemAsync(string cartItemId);
         Task DecrementCartItemAsync(string cartItemId);
+        Task<int> GetCountAsync(string userId);
     }
 }

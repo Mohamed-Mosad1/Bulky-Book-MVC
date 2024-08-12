@@ -33,13 +33,19 @@ namespace BulkyBook.web
             }).AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-            //builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
-
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = $"/Identity/Account/Login";
                 options.LogoutPath = $"/Identity/Account/Logout";
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+            });
+
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(100);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
 
             builder.Services.AddScoped(typeof(IEmailSender), typeof(EmailSender));
@@ -94,12 +100,12 @@ namespace BulkyBook.web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            //Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetConnectionString("Stripe:SecretKey");
-
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.MapRazorPages();
             app.MapControllerRoute(

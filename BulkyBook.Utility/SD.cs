@@ -13,5 +13,8 @@ namespace BulkyBook.Utility
         // Login as Admin
         public const string Admin_Email = "mohamedmosaad115@gmail.com";
         public const string Admin_Password = "Admin@123";
+
+        public const string SessionCart = "SessionShoppingCart";
+
     }
 }

@@ -4,7 +4,6 @@ using BulkyBook.BLL.Services.Contract;
 using BulkyBook.DAL.InterFaces;
 using BulkyBook.DAL.Specifications.OrderSpecs;
 using BulkyBook.DAL.Specifications.ProductSpecs;
-using BulkyBook.Model;
 using BulkyBook.Model.Cart;
 using BulkyBook.Model.OrdersAggregate;
 using BulkyBook.Model.ViewModels.OrderVM;
