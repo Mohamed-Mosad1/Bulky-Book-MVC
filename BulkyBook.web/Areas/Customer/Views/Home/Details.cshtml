@@ -1,11 +1,12 @@
 ﻿@model ProductVM
 
 @{
-    int quantity = 0;
+    int quantity = 1;
+    int maxQuantity = 10;
 }
 
 <form method="post">
-    <div class="card shadow border-0 mt-4 mb-4">
+    <div class="card shadow border-0 mb-5">
         <div class="card-header bg-secondary bg-gradient text-light py-4">
             <div class="row">
                 <div class="col-12 text-center">
@@ -17,14 +18,14 @@
         <div class="card-body">
             <div class="py-3">
                 <div class="row">
-                    <div class="col-6 col-md-2 offset-lg-1 pb-1">
+                    <div class="col-12 pb-1">
                         <a asp-action="Index" class="btn btn-outline-primary bg-gradient mb-5 fw-semibold btn-sm text-uppercase">
                             <small>Back to home</small>
                         </a>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12 col-lg-3 offset-lg-1 text-center mb-3">
+                <div class="row justify-content-center align-items-center">
+                    <div class="col-12 col-md-4 text-center mb-3">
 
                         @if (Model.ProductImages is not null && Model.ProductImages.Count > 0)
                         {
@@ -58,15 +59,14 @@
                                     <span class="visually-hidden">Next</span>
                                 </button>
                             </div>
-
                         }
 
 
                     </div>
-                    <div class="col-12 col-lg-6 offset-lg-1">
+                    <div class="col-12 col-md-7">
 
                         <div class="col-12 col-md-6 pb-4">
-                            <span class="badge">@Model.Category.Name</span>
+                            <span class="badge">@Model.Category?.Name</span>
                         </div>
                         <div class="row ps-2">
                             <h6 class="text-dark text-opacity-50 ">ISBN : @Model.ISBN</h6>
@@ -111,14 +111,15 @@
                             <p class="text-secondary lh-sm">@Model.Description</p>
                         </div>
                         <div class="row pl-2 mb-3">
-                            <div class="col-md-4">
+                            <div class="col-12">
                                 <div class="input-group mb-3">
                                     <span class="input-group-text bg-primary text-white border-0 fw-semibold"
                                           id="inputGroup-sizing-default">
                                         Quantity
                                     </span>
-                                    <input asp-for="@quantity" type="number" value="1" class="form-control fw-bolder text-center mx-3"
-                                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" />
+
+                                    <select class="form-select text-center mx-3" asp-for="@quantity" asp-items="@new SelectList(Enumerable.Range(1, maxQuantity))" aria-label="Default select example">
+                                    </select>
                                 </div>
                             </div>
                         </div>

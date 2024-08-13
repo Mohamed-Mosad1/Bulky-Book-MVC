@@ -14,6 +14,17 @@ a.navbar-brand {
 
 html {
     font-size: 14px;
+    scroll-behavior: smooth
+}
+
+@media (max-width: 576px) {
+    .card-title {
+        font-size: 1rem;
+    }
+
+    .card-subtitle {
+        font-size: 0.875rem;
+    }
 }
 
 @media (min-width: 768px) {

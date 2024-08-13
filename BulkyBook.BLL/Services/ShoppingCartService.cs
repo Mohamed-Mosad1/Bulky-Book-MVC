@@ -28,7 +28,7 @@ namespace BulkyBook.BLL.Services
                 _unitOfWork.Repository<ShoppingCart>().Add(shoppingCart);
             }
 
-            var cartItem = shoppingCart.CartItems.FirstOrDefault(c => c.ProductId == productId);
+            var cartItem = await _unitOfWork.Repository<ShoppingCartItem>().GetWithSpecAsync(new ShoppingCartItemByProductSpec(productId));
 
             if (cartItem is not null)
             {

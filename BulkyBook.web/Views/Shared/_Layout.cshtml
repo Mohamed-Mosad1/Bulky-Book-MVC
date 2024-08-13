@@ -15,71 +15,85 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="/images/book.png" style="width:30px" />
-                    Bulky Book
+                <!-- Brand and Logo -->
+                <a class="navbar-brand" asp-area="Customer" asp-controller="Home" asp-action="Index">
+                    <img src="/images/book.png" alt="Bulky Book Logo" style="width:30px;" />
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <!-- Toggler Button for Small Screens -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav me-auto">
+                <!-- Navbar Links -->
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link" asp-area="Customer" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="Admin" asp-controller="Order" asp-action="Index">Manage Orders</a>
                         </li>
-
+                        <!-- Dropdown for Admin -->
                         @if (User.IsInRole(SD.Role_Admin))
                         {
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Content Management
                                 </a>
-                                <ul class="dropdown-menu">
-                                    <li class="nav-item">
-                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">
+                                            Category
+                                        </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li class="nav-item">
-                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">
+                                            Product
+
+                                        </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li class="nav-item">
-                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Company" asp-action="Index">Company</a>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Company" asp-action="Index">
+                                            Company
+
+                                        </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li class="nav-item">
-                                        <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Create User</a>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">
+                                            Create User
+                                        </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li class="nav-item">
-                                        <a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index">Manage User</a>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index">
+                                            Manage User
+                                        </a>
                                     </li>
                                 </ul>
                             </li>
                         }
-
                     </ul>
-
-
-                    <ul class="navbar-nav">
+                    <!-- Shopping Cart and Login Partial -->
+                    <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <a class="nav-link" asp-area="Customer" asp-controller="Cart" asp-action="Index">
                                 @await Component.InvokeAsync("ShoppingCart")
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <partial name="_LoginPartial" />
+                        </li>
                     </ul>
-
-                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
+
+
     <div class="container-fluid container-md my-5">
         <main role="main" class="pb-3">
             <div class="row">

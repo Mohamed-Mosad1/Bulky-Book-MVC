@@ -11,8 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace BulkyBook.web.Areas.Admin.Controllers
 {
@@ -109,6 +107,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
                 if (!result.Succeeded)
                 {
                     ModelState.AddModelError("", "Failed to add user to role.");
+                    TempData["error"] = "Failed to update user role.";
                     return View(manageUserRoleVM);
                 }
             }
@@ -118,6 +117,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
                 await _userManager.UpdateAsync(user);
             }
 
+            TempData["success"] = "Role updated successfully.";
 
             return RedirectToAction(nameof(Index));
         }
@@ -129,10 +129,6 @@ namespace BulkyBook.web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<AppUser>>> GetAll()
         {
-            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //if (userId is null)
-            //    return BadRequest();
-
             var spec = new AppUserWithCompanySpec();
             var users = await _unitOfWork.Repository<AppUser>().GetAllWithSpecAsync(spec);
 
@@ -149,16 +145,6 @@ namespace BulkyBook.web.Areas.Admin.Controllers
                     };
                 }
             }
-
-            //var userRoles = await _unitOfWork.Repository<IdentityUserRole<string>>().GetAllAsync();
-            //var roles = await _unitOfWork.Repository<IdentityRole>().GetAllAsync();
-
-            //foreach (var item in users)
-            //{
-            //    var roleId = userRoles.FirstOrDefault(u => u.UserId == item.Id)?.RoleId;
-            //    item.RoleName = roles.FirstOrDefault(u => u.Id == roleId)?.Name;
-
-            //}
 
             return Json(new { data = users });
         }

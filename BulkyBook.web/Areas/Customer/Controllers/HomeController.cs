@@ -52,9 +52,6 @@ namespace BulkyBook.web.Areas.Customer.Controllers
         [Authorize]
         public async Task<IActionResult> Details([FromQuery] int productId, int quantity)
         {
-            //if (productId != 0)
-            //    shoppingCartItem.ProductId = productId;
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userId is not null)
