@@ -1,0 +1,71 @@
+﻿@model ManageUserRoleVM
+
+
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-secondary bg-gradient py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Manage User Role</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <form method="post" class="row">
+            <input asp-for="AppUser.Id" hidden />
+            <div class="border p-3">
+                <div class="form-floating py-2 col-12">
+                    <input asp-for="AppUser.UserName" readonly class="form-control border-0 shadow" />
+                    <label asp-for="AppUser.UserName" class="ms-2"></label>
+                </div>
+                <div class="form-floating py-2 col-12">
+                    <select asp-for="AppUser.RoleName" id="roleSelect" asp-items="Model.Roles" class="form-select"></select>
+                    <label asp-for="AppUser.RoleName" class="ms-2">Role</label>
+                </div>
+                <div class="form-floating py-2 col-12">
+                    <select asp-for="AppUser.CompanyId" id="companySelect" asp-items="Model.Companies" class="form-select" style="display:none;">
+                    </select>
+                    <label asp-for="AppUser.CompanyId" id="companyLabel" class="ms-2" style="display:none;">Company</label>
+                </div>
+
+                <div class="row pt-2">
+                    <div class="col-6 col-md-3">
+                        <button type="submit" class="btn btn-primary form-control">Update Role</button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a asp-action="Index" class="btn btn-outline-primary border form-control">
+                            Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var roleSelect = document.getElementById("roleSelect");
+            var companySelect = document.getElementById("companySelect");
+            var companyLabel = document.getElementById("companyLabel");
+
+            function toggleCompanyField() {
+                var selectedRole = roleSelect.value;
+                if (selectedRole === "@SD.Role_Company") {
+                    companySelect.style.display = "block";
+                    companyLabel.style.display = "block";
+                } else {
+                    companySelect.style.display = "none";
+                    companyLabel.style.display = "none";
+                }
+            }
+
+            // Initial check on page load
+            toggleCompanyField();
+
+            // Change event listener
+            roleSelect.addEventListener("change", toggleCompanyField);
+        });
+    </script>
+}

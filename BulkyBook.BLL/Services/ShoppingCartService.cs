@@ -141,7 +141,7 @@ namespace BulkyBook.BLL.Services
 
             if (shoppingCart is not null)
             {
-                return shoppingCart.CartItems.Sum(x=>x.Quantity);
+                return shoppingCart.CartItems.Sum(x => x.Quantity);
             }
 
             return 0;

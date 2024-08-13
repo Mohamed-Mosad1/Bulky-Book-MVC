@@ -3,6 +3,7 @@
 using BulkyBook.Model.Cart;
 using BulkyBook.Model.OrdersAggregate;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BulkyBook.Model.Identity
 {
@@ -18,5 +19,8 @@ namespace BulkyBook.Model.Identity
 
         public ICollection<ShoppingCart> ShoppingCarts { get; set; } = new HashSet<ShoppingCart>();
         public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
+
+        [NotMapped]
+        public string? RoleName { get; set; }
     }
 }

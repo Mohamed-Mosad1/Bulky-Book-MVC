@@ -28,13 +28,27 @@ namespace BulkyBook.web
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
-                //options.SignIn.RequireConfirmedAccount = true;
-                options.User.RequireUniqueEmail = true;
-            }).AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
+                // Sign-In settings
+                options.SignIn.RequireConfirmedEmail = true; // Requires email confirmation before sign-in
+                options.User.RequireUniqueEmail = true; // Ensures unique emails across users
+
+                // Password settings
+                options.Password.RequireDigit = true; // Requires at least one numeric character
+                options.Password.RequiredLength = 6; // Minimum password length
+                options.Password.RequireNonAlphanumeric = false; // No need for special characters
+                options.Password.RequireUppercase = false; // No need for uppercase letters
+                options.Password.RequireLowercase = false; // No need for lowercase letters
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Account is locked for 5 minutes after max failed attempts
+                options.Lockout.MaxFailedAccessAttempts = 5; // Maximum failed access attempts before account is locked
+                options.Lockout.AllowedForNewUsers = true; // Lockout enabled for new users
+            }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
+                options.ExpireTimeSpan = TimeSpan.FromDays(14);
+                options.SlidingExpiration = true;
                 options.LoginPath = $"/Identity/Account/Login";
                 options.LogoutPath = $"/Identity/Account/Logout";
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
@@ -42,8 +56,8 @@ namespace BulkyBook.web
 
             builder.Services.AddAuthentication().AddFacebook(options =>
             {
-                options.AppId = "524220330034531";
-                options.AppSecret = "e7440e360a8c7a18aa5e42f07d97ceb8";
+                options.AppId = builder.Configuration.GetValue<string>("FacebookSettings:AppId") ?? string.Empty;
+                options.AppSecret = builder.Configuration.GetValue<string>("FacebookSettings:AppSecret") ?? string.Empty;
             });
 
             builder.Services.AddDistributedMemoryCache();
