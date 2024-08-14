@@ -123,7 +123,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
             _unitOfWork.Repository<Company>().Delete(companyToDelete);
             await _unitOfWork.CompleteAsync();
 
-            return Json(new { success = true, message = "Delete Successful" });
+            return Json(new { success = true, message = "Company Deleted Successfully" });
         }
 
         #endregion

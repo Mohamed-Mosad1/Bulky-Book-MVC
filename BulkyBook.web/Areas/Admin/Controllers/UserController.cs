@@ -38,7 +38,6 @@ namespace BulkyBook.web.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-
             return View();
         }
 
@@ -87,7 +86,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
             var currentRoles = await _userManager.GetRolesAsync(user);
             string newRole = manageUserRoleVM.AppUser.RoleName!;
 
-            if (!(currentRoles.FirstOrDefault() != newRole))
+            if (!(currentRoles.FirstOrDefault() == newRole))
             {
                 if (newRole == SD.Role_Company)
                 {

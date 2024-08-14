@@ -7,6 +7,7 @@ using BulkyBook.Model.ViewModels;
 using BulkyBook.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BulkyBook.web.Areas.Admin.Controllers
 {
@@ -38,7 +39,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
         {
             if (!id.HasValue || id == 0)
             {
-                return View();
+                return View(new ProductVM());
             }
             else
             {
@@ -140,7 +141,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
             if (!success)
                 return Json(new { success = false, message = "Error while deleting" });
 
-            return Json(new { success = true, message = "Delete Successful" });
+            return Json(new { success = true, message = "Product Deleted Successfully" });
         }
 
         #endregion

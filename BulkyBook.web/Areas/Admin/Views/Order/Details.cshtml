@@ -167,12 +167,10 @@
                             </div>
 
                             <div class="row align-items-center my-3">
-                                <div class="col-3">Payment Status</div>
-                                <div class="col-9">
-                                    <select asp-for="PaymentStatus" asp-items="@paymentStatus" class="form-select" readonly="@(isAdminOrEmployee ? true : false)">
-                                        <option disabled value="">-- Select --</option>
-                                    </select>
-                                </div>
+                                <label asp-for="PaymentStatus" class="col-sm-3 col-form-label"></label>
+                                    <div class="col-9">
+                                        <input asp-for="PaymentStatus" type="text" class="form-control" readonly />
+                                    </div>
                             </div>
 
                             @if (isAdminOrEmployee)

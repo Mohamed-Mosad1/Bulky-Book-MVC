@@ -4,7 +4,6 @@
 
 @{
     var categories = new SelectList(await _unitOfWork.Repository<Category>().GetAllAsync(), nameof(Category.Id), nameof(Category.Name));
-    
 }
 
 <div class="card shadow border-0 my-4">
