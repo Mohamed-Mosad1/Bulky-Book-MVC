@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using BulkyBook.BLL.Services.Contract;
+using BulkyBook.DAL.Data;
 using BulkyBook.DAL.InterFaces;
+using BulkyBook.Model.Cart;
 using BulkyBook.Model.OrdersAggregate;
 using BulkyBook.Model.ViewModels;
 using BulkyBook.Model.ViewModels.OrderVM;
@@ -20,6 +22,8 @@ namespace BulkyBook.web.Areas.Customer.Controllers
         private readonly IOrderService _orderService;
         private readonly IPaymentService _paymentService;
         private readonly IEmailSender _emailSender;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
 
         public CartController(
@@ -27,6 +31,7 @@ namespace BulkyBook.web.Areas.Customer.Controllers
             IOrderService orderService,
             IPaymentService paymentService,
             IEmailSender emailSender,
+            IUnitOfWork unitOfWork,
             IMapper mapper
             )
         {
@@ -34,6 +39,7 @@ namespace BulkyBook.web.Areas.Customer.Controllers
             _orderService = orderService;
             _paymentService = paymentService;
             _emailSender = emailSender;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -42,7 +48,7 @@ namespace BulkyBook.web.Areas.Customer.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId is not null)
             {
-                var cart = await _shoppingCartService.GetCartAsync(userId, true, true);
+                var cart = await _shoppingCartService.GetCartAsync(userId, true, true, true);
                 if (cart is not null)
                 {
                     decimal totalPrice = cart.CartItems
@@ -68,6 +74,7 @@ namespace BulkyBook.web.Areas.Customer.Controllers
         public async Task<IActionResult> Minus(string cartId)
         {
             await _shoppingCartService.DecrementCartItemAsync(cartId);
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -91,7 +98,7 @@ namespace BulkyBook.web.Areas.Customer.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId is not null)
             {
-                var cart = await _shoppingCartService.GetCartAsync(userId, true, false);
+                var cart = await _shoppingCartService.GetCartAsync(userId, true, true);
 
                 if (cart is not null)
                 {
@@ -121,20 +128,31 @@ namespace BulkyBook.web.Areas.Customer.Controllers
                 return View(orderVM);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var orderCreated = new Order();
+
             if (userId is not null)
             {
-                var cart = await _shoppingCartService.GetCartAsync(userId, true);
+                var cart = await _shoppingCartService.GetCartAsync(userId, true, true);
+
                 if (cart is not null)
                 {
                     var orderAddress = new OrderAddress(orderVM.OrderAddress.FullName, orderVM.OrderAddress.City, orderVM.OrderAddress.Street, orderVM.OrderAddress.State, orderVM.OrderAddress.PhoneNumber);
 
-                    var oo = await _orderService.CreateOrderAsync(userId, cart, orderAddress);
-                    orderCreated = await _orderService.GetOrderByIdAsync(userId, true);
+                    orderCreated = await _orderService.CreateOrderAsync(userId, cart, orderAddress);
+                    Session? session = null!;
 
                     if (orderCreated is not null && orderCreated.AppUser.CompanyId is null)
                     {
-                        var session = await _paymentService.CreateSessionPaymentAsync(cart, orderCreated);
+                        session = await _paymentService.CreateSessionPaymentAsync(orderCreated.Id);
+                        orderCreated.SessionId = session?.Id;
+
+                        _unitOfWork.Repository<Order>().Update(orderCreated);
+
+                        cart.LastSessionId = session?.Id;
+                        _unitOfWork.Repository<ShoppingCart>().Update(cart);
+
+                        await _unitOfWork.CompleteAsync();
 
                         Response.Headers.Add("Location", session.Url);
 
@@ -142,7 +160,6 @@ namespace BulkyBook.web.Areas.Customer.Controllers
                     }
                 }
             }
-
             return RedirectToAction(nameof(OrderConfirmation), new { orderId = orderCreated?.Id });
         }
 
@@ -161,7 +178,7 @@ namespace BulkyBook.web.Areas.Customer.Controllers
 
                 if (session.PaymentStatus.ToLower() == "paid")
                 {
-                    _paymentService.UpdatePaymentIntentIdAndSessionIdAsync(order, session.Id, session.PaymentIntentId);
+                    await _paymentService.UpdatePaymentIntentIdAndSessionIdAsync(order, session.Id, session.PaymentIntentId);
                     await _paymentService.UpdateOrderAndPaymentStatusAsync(order.Id, OrderStatus.Approved, PaymentStatus.Approved);
                 }
 

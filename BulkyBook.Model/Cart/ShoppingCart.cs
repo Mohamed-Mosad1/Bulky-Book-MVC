@@ -9,7 +9,6 @@ namespace BulkyBook.Model.Cart
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string? LastSessionId { get; set; }
-        public string? ClientSecret { get; set; }
 
         public ICollection<ShoppingCartItem> CartItems { get; set; } = new HashSet<ShoppingCartItem>();
 

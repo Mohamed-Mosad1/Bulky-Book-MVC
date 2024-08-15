@@ -102,7 +102,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> CompanyPayNow(OrderToReturnVM orderToReturnVM)
         {
-            var session = await _paymentService.CreateSessionPaymentForCompanyAsync(orderToReturnVM.Id);
+            var session = await _paymentService.CreateSessionPaymentAsync(orderToReturnVM.Id);
             if (session?.Url is not null)
                 Response.Headers.Add("Location", session.Url);
             else
@@ -129,7 +129,7 @@ namespace BulkyBook.web.Areas.Admin.Controllers
 
                 if (session.PaymentStatus.ToLower() == "paid")
                 {
-                    _paymentService.UpdatePaymentIntentIdAndSessionIdAsync(order, session.Id, session.PaymentIntentId);
+                    await _paymentService.UpdatePaymentIntentIdAndSessionIdAsync(order, session.Id, session.PaymentIntentId);
                     await _paymentService.UpdateOrderAndPaymentStatusAsync(order.Id, order.OrderStatus, PaymentStatus.Approved);
                 }
             }

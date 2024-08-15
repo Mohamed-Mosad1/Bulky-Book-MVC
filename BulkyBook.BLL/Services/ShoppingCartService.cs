@@ -3,6 +3,7 @@
 using BulkyBook.DAL.InterFaces;
 using BulkyBook.DAL.Specifications.ShoppingCarts;
 using BulkyBook.Model.Cart;
+using System.Transactions;
 
 namespace BulkyBook.BLL.Services
 {
@@ -17,45 +18,48 @@ namespace BulkyBook.BLL.Services
 
         public async Task AddOrUpdateToCartAsync(string userId, int productId, int quantity)
         {
-            var shoppingCart = await GetCartAsync(userId);
-            if (shoppingCart is null)
+            using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                shoppingCart = new ShoppingCart()
+                var shoppingCart = await GetCartAsync(userId, true);
+                if (shoppingCart is null)
                 {
-                    AppUserId = userId
-                };
+                    shoppingCart = new ShoppingCart()
+                    {
+                        AppUserId = userId
+                    };
 
-                _unitOfWork.Repository<ShoppingCart>().Add(shoppingCart);
-            }
+                    _unitOfWork.Repository<ShoppingCart>().Add(shoppingCart);
+                    await _unitOfWork.CompleteAsync();
+                }
 
-            var cartItem = await _unitOfWork.Repository<ShoppingCartItem>().GetWithSpecAsync(new ShoppingCartItemByProductSpec(productId));
+                var cartItem = shoppingCart.CartItems.FirstOrDefault(x => x.ProductId == productId);
 
-            if (cartItem is not null)
-            {
-                cartItem.Quantity += quantity;
-            }
-            else
-            {
-                var newCartItem = new ShoppingCartItem
+                if (cartItem is not null)
                 {
-                    ProductId = productId,
-                    Quantity = quantity,
-                    ShoppingCartId = shoppingCart.Id
-                };
+                    cartItem.Quantity += quantity;
+                    _unitOfWork.Repository<ShoppingCartItem>().Update(cartItem);
+                }
+                else
+                {
+                    var newCartItem = new ShoppingCartItem
+                    {
+                        ProductId = productId,
+                        Quantity = quantity,
+                        ShoppingCartId = shoppingCart.Id
+                    };
 
-                _unitOfWork.Repository<ShoppingCartItem>().Add(newCartItem);
+                    _unitOfWork.Repository<ShoppingCartItem>().Add(newCartItem);
+                }
+
+                await _unitOfWork.CompleteAsync();
+                transaction.Complete();
             }
-
-            await _unitOfWork.CompleteAsync();
         }
 
-        public async Task<ShoppingCart?> GetCartAsync(string userId, bool includeCartItem = false, bool includeImages = false)
+        public async Task<ShoppingCart?> GetCartAsync(string userId, bool includeCartItem = false, bool includeProduct = false, bool includeImages = false)
         {
-            var spec = new ShoppingCartWithCartItemSpec(userId, includeCartItem, includeImages);
-
-            var shoppingCart = await _unitOfWork.Repository<ShoppingCart>().GetWithSpecAsync(spec);
-
-            return shoppingCart;
+            var spec = new ShoppingCartWithCartItemSpec(userId, includeCartItem, includeProduct, includeImages);
+            return await _unitOfWork.Repository<ShoppingCart>().GetWithSpecAsync(spec);
         }
 
         public async Task<ShoppingCartItem?> GetCartItemByIdAsync(string cartItemId)
@@ -65,27 +69,29 @@ namespace BulkyBook.BLL.Services
 
         public async Task RemoveCartItemAsync(string cartItemId)
         {
-            var shoppingCartItem = await _unitOfWork.Repository<ShoppingCartItem>().GetByIdAsync(cartItemId);
-
+            var shoppingCartItem = await GetCartItemByIdAsync(cartItemId);
             if (shoppingCartItem is not null)
             {
                 _unitOfWork.Repository<ShoppingCartItem>().Delete(shoppingCartItem);
                 await _unitOfWork.CompleteAsync();
+
+                if (shoppingCartItem?.Quantity <= 1)
+                {
+                    await RemoveCartAsync(shoppingCartItem.ShoppingCartId);
+                }
             }
+
         }
 
         public async Task RemoveCartAsync(string cartId)
         {
             var shoppingCart = await _unitOfWork.Repository<ShoppingCart>().GetByIdAsync(cartId);
-
             if (shoppingCart is not null)
             {
                 _unitOfWork.Repository<ShoppingCart>().Delete(shoppingCart);
-
                 await _unitOfWork.CompleteAsync();
             }
         }
-
 
         public decimal GetPriceBasedOnQuantity(ShoppingCartItem shoppingCartItem)
         {
@@ -110,20 +116,16 @@ namespace BulkyBook.BLL.Services
 
         public async Task DecrementCartItemAsync(string cartItemId)
         {
-            var cartItem = await _unitOfWork.Repository<ShoppingCartItem>().GetByIdAsync(cartItemId);
+            var cartItem = await GetCartItemByIdAsync(cartItemId);
+
             if (cartItem is not null)
             {
                 if (cartItem.Quantity <= 1)
                 {
-                    _unitOfWork.Repository<ShoppingCartItem>().Delete(cartItem);
+                    var cart = await _unitOfWork.Repository<ShoppingCart>().GetByIdAsync(cartItem.ShoppingCartId);
 
-                    var spec = new ShoppingCartWithCartItemSpec(cartItem.Id);
-                    var cart = await _unitOfWork.Repository<ShoppingCart>().GetWithSpecAsync(spec);
-
-                    if (cart is not null && !cart.CartItems.Any())
-                    {
+                    if (cart is not null)
                         _unitOfWork.Repository<ShoppingCart>().Delete(cart);
-                    }
                 }
                 else
                 {
@@ -135,16 +137,11 @@ namespace BulkyBook.BLL.Services
             }
         }
 
+
         public async Task<int> GetCountAsync(string userId)
         {
             var shoppingCart = await GetCartAsync(userId, true);
-
-            if (shoppingCart is not null)
-            {
-                return shoppingCart.CartItems.Sum(x => x.Quantity);
-            }
-
-            return 0;
+            return shoppingCart?.CartItems.Sum(x => x.Quantity) ?? 0;
         }
 
     }

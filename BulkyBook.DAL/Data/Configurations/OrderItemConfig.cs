@@ -8,7 +8,11 @@ namespace BulkyBook.DAL.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<OrderItem> builder)
         {
-            builder.OwnsOne(orderItem => orderItem.ProductOrdered, product => product.WithOwner());
+            builder.OwnsOne(orderItem => orderItem.ProductOrdered, product =>
+            {
+                product.Property(p => p.ProductPrice).HasColumnType("decimal(18, 2)").HasColumnName("ProductPrice");
+            });
+
             builder.Property(orderItem => orderItem.Price).HasColumnType("decimal(18, 2)");
         }
     }

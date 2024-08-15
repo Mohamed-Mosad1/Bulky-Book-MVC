@@ -22,8 +22,8 @@ namespace BulkyBook.BLL.Services
         public OrderService(
             IShoppingCartService shoppingCartService,
             IPaymentService paymentService,
-            IConfiguration configuration,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            IConfiguration configuration
             )
         {
             _unitOfWork = unitOfWork;
@@ -45,7 +45,7 @@ namespace BulkyBook.BLL.Services
                     var productItemOrdered = new ProductItemOrdered();
                     if (product is not null)
                     {
-                        productItemOrdered = new ProductItemOrdered(product.Id, product.Title, product.ProductImages.FirstOrDefault()?.ImageUrl);
+                        productItemOrdered = new ProductItemOrdered(product.Id, product.Title, _shoppingCartService.GetPriceBasedOnQuantity(item), product.ProductImages.FirstOrDefault()?.ImageUrl);
                         var orderItem = new OrderItem(productItemOrdered, product.Price, item.Quantity);
                         orderItems.Add(orderItem);
                     }
@@ -55,28 +55,22 @@ namespace BulkyBook.BLL.Services
             var orderTotal = shoppingCart.CartItems
                             .Sum(item => _shoppingCartService.GetPriceBasedOnQuantity(item) * item.Quantity);
 
-            // It is a regular customer
+            var orderSpec = new OrderBySessionIdSpec(shoppingCart.LastSessionId);
+            var existOrder = await _unitOfWork.Repository<Order>().GetWithSpecAsync(orderSpec);
+            if (existOrder is not null)
+                _unitOfWork.Repository<Order>().Delete(existOrder);
+
             var orderStatus = OrderStatus.Pending;
             var paymentStatus = PaymentStatus.Pending;
 
-            if (shoppingCart.AppUser.CompanyId > 0)
+            if (shoppingCart.AppUser.CompanyId is not null)
             {
                 // It is a company user
                 orderStatus = OrderStatus.Approved;
                 paymentStatus = PaymentStatus.ApprovedForDelayedPayment;
-
-            }
-
-            var orderSpec = new OrderWithPaymentIntentSpec(shoppingCart.LastSessionId);
-            var existOrder = await _unitOfWork.Repository<Order>().GetWithSpecAsync(orderSpec);
-            if (existOrder is not null)
-            {
-                _unitOfWork.Repository<Order>().Delete(existOrder);
             }
 
             var order = new Order(userId, orderStatus, orderAddress, orderItems, orderTotal, paymentStatus: paymentStatus);
-
-            //await _paymentService.CreateOrUpdatePaymentIntentAsync(shoppingCart, orderTotal, order.Id);
 
             _unitOfWork.Repository<Order>().Add(order);
 
@@ -91,9 +85,9 @@ namespace BulkyBook.BLL.Services
             return await _unitOfWork.Repository<Order>().GetWithSpecAsync(spec);
         }
 
-        public async Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string? userId = null, bool includeUser = false, bool includeOrderItems = false)
+        public async Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string? userOrOrderId = null, bool includeUser = false, bool includeOrderItems = false)
         {
-            var spec = new OrdersWithOrderItemsSpec(userId, includeUser, includeOrderItems);
+            var spec = new OrdersWithOrderItemsSpec(userOrOrderId, includeUser, includeOrderItems);
             var orders = await _unitOfWork.Repository<Order>().GetAllWithSpecAsync(spec);
             return orders;
         }
