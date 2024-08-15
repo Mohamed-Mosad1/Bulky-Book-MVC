@@ -1,0 +1,89 @@
+﻿@model ShoppingCartVM
+
+<div class="card shadow border-0 mb-5">
+    <div class="card-header bg-secondary bg-gradient text-light ml-0 py-4">
+        <div class="row px-4">
+            <div class="col-12">
+                <h5 class="pt-2 text-white">Shopping Cart</h5>
+            </div>
+        </div>
+    </div>
+    <div class="card-body my-4">
+        @if (Model.CartItems is not null && Model.CartItems.Any())
+        {
+            <div class="row justify-content-center mb-4">
+                <div class="col-12 ">
+                    <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary text-uppercase mb-3 btn-sm">
+                        <small>Continue Shopping</small>
+                    </a>
+                </div>
+                <div class="row">
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <div class="col-12 mb-4">
+                            <div class="row align-items-center border-bottom py-3">
+                                <!-- Image Column -->
+                                <div class="col-12 col-sm-4 col-md-3 text-center py-2">
+                                    <img src="@(item.ImageUrl ?? "https://placehold.co/500x600/png")" class="img-fluid object-fit-cover w-100 rounded" />
+                                </div>
+
+                                <!-- Details Column -->
+                                <div class="col-12 col-sm-8 col-md-9 pt-3 pt-md-0">
+                                    <h5 class="text-uppercase text-secondary mb-2">
+                                        <strong>@item.ProductTitle</strong>
+                                    </h5>
+                                    <p>
+                                        <small>@Html.Raw(item.ProductDescription?.Split(' ').Take(15).Aggregate((s1, s2) => s1 + " " + s2))...</small>
+                                    </p>
+
+                                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center pt-2">
+                                        <h6 class="fw-semibold mb-2 mb-sm-0">
+                                            @item.ProductPrice.ToString("c")
+                                            <span class="text-muted">&nbsp;x&nbsp;</span>@item.Quantity
+                                        </h6>
+
+                                        <div class="btn-group mt-2 mt-sm-0" role="group">
+                                            <a asp-action="plus" asp-route-cartId="@item.Id" class="btn btn-outline-primary bg-gradient py-2">
+                                                <i class="bi bi-plus-square"></i>
+                                            </a>
+                                            <a asp-action="minus" asp-route-cartId="@item.Id" class="btn btn-outline-primary mx-2 bg-gradient py-2">
+                                                <i class="bi bi-dash-square"></i>
+                                            </a>
+                                            <a asp-action="remove" asp-route-cartItemId="@item.Id" class="btn btn-danger bg-gradient py-2">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card-footer bg-white border-0">
+                <div class="row">
+                    <div class="col-md-4 offset-md-4">
+                        <ul class="list-group mb-4">
+                            <li class="d-flex justify-content-between align-items-center">
+                                <h5 class="text-dark fw-semibold text-uppercase">Total (USD)</h5>
+                                <h4 class="text-dark fw-bolder">@Model.TotalPrice.ToString("c")</h4>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 offset-md-5">
+                        <a asp-action="Summary" class="btn btn-primary border-0 bg-gradient w-100 py-2">Summary</a>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <h3 class="text-muted">Your cart is currently empty.</h3>
+                <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-outline-primary mt-4">Continue Shopping</a>
+            </div>
+        }
+    </div>
+</div>

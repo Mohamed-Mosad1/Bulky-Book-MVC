@@ -1,0 +1,281 @@
+﻿@model OrderToReturnVM
+
+@{
+    var isAdminOrEmployee = User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee);
+    var paymentStatus = new SelectList(Enum.GetValues(typeof(PaymentStatus)).Cast<PaymentStatus>().ToList());
+}
+
+<form method="post">
+    <input asp-for="Id" hidden />
+    <div class="container mb-4">
+        <div class="card">
+            <div class="card-header bg-dark text-light">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-4 col-md-6 pb-1">
+                        <i class="fas fa-shopping-cart"></i> &nbsp; Order Summary
+                    </div>
+                    <div class="col-4 col-md-4 offset-md-2 text-end">
+                        <a asp-action="Index" class="btn btn-outline-info form-control btn-sm">Back to Orders</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="container rounded p-2">
+                    <div class="row">
+                        <div class="col-lg-6 pb-4">
+                            <h4 class="text-primary">PickUp Details:</h4>
+                            <div class="row mb-3">
+                                <label for="FullName" class="col-sm-3 col-form-label">Full Name</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <input asp-for="OrderAddress.FullName" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                    <span asp-validation-for="OrderAddress.FullName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="OrderAddress.Street" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <input asp-for="OrderAddress.Street" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                    <span asp-validation-for="OrderAddress.Street" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="OrderAddress.City" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <input asp-for="OrderAddress.City" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                    <span asp-validation-for="OrderAddress.City" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="OrderAddress.State" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <input asp-for="OrderAddress.State" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                    <span asp-validation-for="OrderAddress.State" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="OrderAddress.PhoneNumber" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <input asp-for="OrderAddress.PhoneNumber" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                    <span asp-validation-for="OrderAddress.PhoneNumber" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="Email" class="col-sm-3 col-form-label"></label>
+                                <div class="col-9">
+                                    <input asp-for="Email" type="text" class="form-control" readonly="@(isAdminOrEmployee ? false : true)" />
+                                </div>
+                                <span asp-validation-for="OrderAddress.PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="OrderDate" class="col-sm-3 col-form-label"></label>
+                                <div class="col-9">
+                                    <input asp-for="OrderDate" value="@(Model.OrderDate.ToString() ?? "Not Available")" type="text" class="form-control" readonly />
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="Carrier" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-truck"></i></span>
+                                        <input asp-for="Carrier" type="text" class="form-control" id="carrier" placeholder="Enter carrier" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label asp-for="TrackingNumber" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-truck"></i></span>
+                                        <input asp-for="TrackingNumber" type="text" class="form-control" id="trackingNumber" placeholder="Enter Tracking Number" readonly="@(isAdminOrEmployee ? false : true)" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label asp-for="ShippingDate" class="col-sm-3 col-form-label"></label>
+                                <div class="col-9">
+                                    <input asp-for="ShippingDate" value="@(Model.ShippingDate?.ToString() ?? "Not Available")" type="text" class="form-control" readonly />
+                                </div>
+                            </div>
+
+                            @if (isAdminOrEmployee)
+                            {
+                                <div class="row mb-3">
+                                    <label asp-for="SessionId" class="col-sm-3 col-form-label"></label>
+                                    <div class="col-9">
+                                        <input asp-for="SessionId" value="@(Model.SessionId ?? "Not Available")" type="text" class="form-control" readonly />
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label asp-for="PaymentIntentId" class="col-sm-3 col-form-label"></label>
+                                    <div class="col-9">
+                                        <input asp-for="PaymentIntentId" value="@(Model.PaymentIntentId ?? "Not Available")" type="text" class="form-control" readonly />
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="row mb-3">
+                                <label asp-for="OrderStatus" class="col-sm-3 col-form-label"></label>
+                                <div class="col-9">
+                                    <input asp-for="OrderStatus" type="text" class="form-control" readonly />
+                                </div>
+                            </div>
+
+                            <div class="row my-1">
+                                <div class="col-3">
+                                    @if (Model.SessionId is null)
+                                    {
+                                        <span>Payment Due Date</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Payment Date</span>
+                                    }
+                                </div>
+                                <div class="col-9">
+                                    @if (Model.SessionId is null)
+                                    {
+                                        <input asp-for="PaymentDueDate" value="@(Model.PaymentDueDate?.ToString() ?? "Not Available")" readonly type="text" class="form-control" />
+                                    }
+                                    else
+                                    {
+                                        <input asp-for="PaymentDate" value="@(Model.PaymentDate?.ToString() ?? "Not Available")" readonly type="text" class="form-control" />
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="row align-items-center my-3">
+                                <label asp-for="PaymentStatus" class="col-sm-3 col-form-label"></label>
+                                    <div class="col-9">
+                                        <input asp-for="PaymentStatus" type="text" class="form-control" readonly />
+                                    </div>
+                            </div>
+
+                            @if (isAdminOrEmployee)
+                            {
+                                <button type="submit" asp-action="Details" class="btn btn-warning form-control my-1">Update Order Details</button>
+                            }
+                        </div>
+                        <div class="col-lg-5 offset-lg-1">
+                            <h4 class="text-primary">Order Summary</h4>
+
+                            <ul class="list-group mb-3">
+                                <li class="list-group-item bg-primary">
+                                    <div class="row">
+                                        <h5 class="text-white my-2 text-center">Order Status - @Model.OrderStatus</h5>
+                                    </div>
+                                </li>
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <li class="list-group-item p-3">
+                                        <div class="row align-items-center">
+                                            <div class="col-8">
+                                                <h6 class="my-0 text-primary">@item.ProductTitle</h6>
+                                                <small class="text-muted">Price: @item.Price.ToString("c")</small><br />
+                                                <small class="text-muted">Quantity: @item.Quantity</small>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <p class="text-success">@((item.Quantity * item.Price).ToString("c"))</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                                <li class="list-group-item bg-primary">
+                                    <div class="row container">
+                                        <div class="col-6">
+                                            <h5 class="text-white">TOTAL</h5>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <h5 class="text-white">@Model.OrderTotal.ToString("c")</h5>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            @if (Model.PaymentStatus == PaymentStatus.ApprovedForDelayedPayment.ToString() && Model.OrderStatus == OrderStatus.Shipped.ToString())
+                            {
+                                <button type="submit" asp-action="CompanyPayNow" class="btn btn-success form-control my-1">Pay Now</button>
+                            }
+
+                            @if (isAdminOrEmployee)
+                            {
+                                <div class="d-grid gap-2">
+                                    @if (Model.OrderStatus == OrderStatus.Approved.ToString())
+                                    {
+                                        <button type="submit" asp-action="StartProcessing" class="btn btn-primary my-1">Start Processing</button>
+                                    }
+
+                                    @if (Model.OrderStatus == OrderStatus.Processing.ToString())
+                                    {
+                                        <button type="submit" asp-action="ShipOrder" onclick="return validateInput()" class="btn btn-primary my-1">Ship Order</button>
+                                    }
+
+                                    @if (Model.OrderStatus != PaymentStatus.Refunded.ToString() &&
+                                   Model.OrderStatus != OrderStatus.Cancelled.ToString() &&
+                                   Model.OrderStatus != OrderStatus.Shipped.ToString())
+                                    {
+                                        <button asp-action="CancelOrder" type="submit" class="btn btn-danger my-1">Cancel Order</button>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function validateInput() {
+            const trackingNumber = document.getElementById("trackingNumber").value;
+            const carrier = document.getElementById("carrier").value;
+
+            if (!trackingNumber) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please enter a tracking number!',
+                });
+                return false;
+            }
+
+            if (!carrier) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please enter a carrier!',
+                });
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+}

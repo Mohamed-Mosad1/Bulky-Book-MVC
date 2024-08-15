@@ -1,0 +1,72 @@
+﻿@{
+    var status = Context.Request.Query["status"].ToString();
+    var statusClasses = new Dictionary<string, string>
+    {
+        { "all", "text-primary" },
+        { "pending", "text-primary" },
+        { "processing", "text-primary" },
+        { "completed", "text-primary" },
+        { "approved", "text-primary" }
+    };
+
+    if (statusClasses.ContainsKey(status))
+    {
+        statusClasses[status] = "active bg-primary";
+    }
+    else
+    {
+        statusClasses["all"] = "active bg-primary";
+    }
+}
+
+<div class="card shadow border-0 my-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Order List</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between pb-5 pt-2">
+            <ul class="list-group list-group-horizontal-sm">
+                <li class="list-group-item @statusClasses["all"]">
+                    <a class="text-decoration-none" asp-controller="Order" asp-action="Index" asp-route-status="all">All</a>
+                </li>
+                <li class="list-group-item @statusClasses["processing"]">
+                    <a class="text-decoration-none" asp-controller="Order" asp-action="Index" asp-route-status="processing">Processing</a>
+                </li>
+                <li class="list-group-item @statusClasses["pending"]">
+                    <a class="text-decoration-none" asp-controller="Order" asp-action="Index" asp-route-status="pending">Payment Pending</a>
+                </li>
+                <li class="list-group-item @statusClasses["completed"]">
+                    <a class="text-decoration-none" asp-controller="Order" asp-action="Index" asp-route-status="completed">Completed</a>
+                </li>
+                <li class="list-group-item @statusClasses["approved"]">
+                    <a class="text-decoration-none" asp-controller="Order" asp-action="Index" asp-route-status="approved">Approved</a>
+                </li>
+            </ul>
+        </div>
+        <div class="table-responsive">
+            <table id="tblData" class="table table-bordered table-striped table-hover py-4">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User Name</th>
+                        <th>Phone Number</th>
+                        <th>Email</th>
+                        <th>Order Status</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/order.js"></script>
+}
+
